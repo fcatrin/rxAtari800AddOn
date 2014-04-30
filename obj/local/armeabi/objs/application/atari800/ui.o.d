@@ -1,0 +1,236 @@
+/home/hydefus/devel/droid800-read-only/droid800/obj/local/armeabi/objs/application/atari800//ui.o: \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//ui.c \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//config.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdio.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/cdefs.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/cdefs_elf.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/_types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/_types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdint.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/posix_types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/stddef.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/compiler.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/posix_types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/kernel.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/sysmacros.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/string.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/malloc.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdlib.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/alloca.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/strings.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/memory.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/config.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/atari.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//afile.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//antic.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//binload.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cartridge.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cassette.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours_external.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours_ntsc.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//compfile.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cfg.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cpu.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//devices.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//esc.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//filter_ntsc.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari_ntsc.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari_ntsc_config.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//gtia.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//screen.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//input.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//akey.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//log.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//memory.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//platform.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//videomode.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//rtime.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sio.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//statesav.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//ui.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//ui_basic.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//util.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/ctype.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/unistd.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/select.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/time.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/time.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/signal.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/limits.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/limits.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/limits.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/internal_types.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/limits.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/syslimits.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/signal.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm-generic/signal.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/siginfo.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm-generic/siginfo.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/sysconf.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/capability.h \
+ /home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/pathconf.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//pokeysnd.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//pokey.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sndsave.h \
+ /home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sound.h
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//config.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdio.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/cdefs.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/cdefs_elf.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/_types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/_types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdint.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/posix_types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/stddef.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/compiler.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/posix_types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/kernel.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/sysmacros.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/string.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/malloc.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/stdlib.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/alloca.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/strings.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/memory.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/config.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800/atari.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//afile.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//antic.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//binload.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cartridge.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cassette.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours_external.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//colours_ntsc.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//compfile.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cfg.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//cpu.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//devices.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//esc.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//filter_ntsc.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari_ntsc.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//atari_ntsc_config.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//gtia.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//screen.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//input.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//akey.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//log.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//memory.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//platform.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//videomode.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//rtime.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sio.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//statesav.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//ui.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//ui_basic.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//util.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/ctype.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/unistd.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/select.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/time.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/time.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/signal.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/limits.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/limits.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/limits.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/internal_types.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/machine/limits.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/syslimits.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/signal.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm-generic/signal.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm/siginfo.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/asm-generic/siginfo.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/sys/sysconf.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/linux/capability.h:
+
+/home/hydefus/devel/android-ndk-r5b/platforms/android-8/arch-arm/usr/include/pathconf.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//pokeysnd.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//pokey.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sndsave.h:
+
+/home/hydefus/devel/droid800-read-only/droid800/jni/../jni/application/atari800//sound.h:
