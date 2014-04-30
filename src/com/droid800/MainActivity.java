@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -191,13 +192,20 @@ public class MainActivity extends Activity {
 
         _lowerMode = false;
 
-        copyAssets();
         AtariKeys.init();
 		super.onCreate(savedInstanceState);
 		
+        
+        Intent intent = getIntent();
+        String romFile = intent.getStringExtra("game");
+        String osRom = intent.getStringExtra("osrom");
+		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-	    String romFile = "/sdcard/bcquest.atr";
-	    String osRom = this.getApplicationInfo().dataDir + "/bios/ATARIXL.ROM";
+		if (romFile == null) {
+	        copyAssets();
+		    romFile = "/sdcard/bcquest.atr";
+		    osRom = this.getApplicationInfo().dataDir + "/bios/ATARIXL.ROM";
+		}
 	    String romDirectory = "/sdcard"; 
 	    SharedPreferences.Editor editor = preferences.edit();
 	    editor.putString("osrom", osRom);

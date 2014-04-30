@@ -4,7 +4,8 @@
     package="com.droid800"
     android:installLocation="auto"
     android:versionCode="8"
-    android:versionName="8">
+    android:versionName="8"
+    android:sharedUserId="psychoworld.retrobox">
 
     <application 
         android:label="@string/app_name" 
@@ -31,7 +32,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+            <intent-filter>
+                <action android:name="retrobox.atari800" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+           </activity>
 
         <activity android:name="Droid800Preferences">
         </activity>
