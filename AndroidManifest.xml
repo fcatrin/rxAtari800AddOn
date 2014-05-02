@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.droid800"
+    package="xtvapps.retrobox.atari800"
     android:installLocation="auto"
     android:versionCode="8"
     android:versionName="8"
@@ -13,7 +13,7 @@
         android:debuggable="false">
 
         <activity 
-           android:name="Droid800Activity"
+           android:name="xtvapps.retrobox.atari800.Droid800Activity"
            android:label="@string/app_name">
 
          <!--     <intent-filter>
@@ -23,7 +23,7 @@
 -->        </activity>
 
         <activity 
-           android:name="MainActivity"
+           android:name="xtvapps.retrobox.atari800.MainActivity"
            android:label="@string/emulator_activity_name"
            android:process="com.droid800.emulator"
            android:configChanges="orientation|keyboard|keyboardHidden">
@@ -39,13 +39,13 @@
             </intent-filter>
            </activity>
 
-        <activity android:name="Droid800Preferences">
+        <activity android:name="xtvapps.retrobox.atari800.Droid800Preferences">
         </activity>
         
         <activity android:name="com.tvi910.android.core.AndroidFileBrowser">
         </activity>
 
-        <activity android:name="com.droid800.About">
+        <activity android:name="xtvapps.retrobox.atari800.About">
         </activity>
 
     </application>

@@ -1,4 +1,4 @@
-package com.droid800;
+package xtvapps.retrobox.atari800;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,7 +56,7 @@ import com.tvi910.android.core.buttonpanel.ButtonPanel;
 
 import com.tvi910.android.sdl.SDLInterface;
 
-import com.droid800.R;
+import xtvapps.retrobox.atari800.R;
 
 /**
  * Droid800Activity - main activity for the Droid800 application.

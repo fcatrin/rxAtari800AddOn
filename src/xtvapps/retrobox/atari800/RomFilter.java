@@ -1,4 +1,4 @@
-package com.droid800;
+package xtvapps.retrobox.atari800;
 
 import com.tvi910.android.core.AndroidFileBrowser;
 
