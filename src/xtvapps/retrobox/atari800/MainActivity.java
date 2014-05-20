@@ -187,7 +187,8 @@ public class MainActivity extends Activity {
         Intent intent = getIntent();
         String romFile = intent.getStringExtra("game");
         String osRom = intent.getStringExtra("osrom");
-        boolean useGamepad = intent.getBooleanExtra("gamepad", false);
+        String sGamepad = intent.getStringExtra("gamepad");
+        boolean useGamepad = sGamepad!=null && !sGamepad.equals("NONE");
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (romFile == null) {
