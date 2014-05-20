@@ -356,11 +356,11 @@ public class MainActivity extends Activity {
             gameRom = Cartridge.getInstance().prepareCartridge(gameRom);
         }
         String osRom =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osrom","");
-        String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "1");
-        boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", false);
+        String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
+        boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", true);
         boolean enableSound = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("sound", true);
         boolean showBorder = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showBorder", true);
-        String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "11025");
+        String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "44100");
         boolean stretchToFit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("stretchtofit", true);
         boolean ntscMode = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("videoSystem", "NTSC").equals("NTSC");
         String leftController = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("leftControllerId", "Virtual Joystick");
@@ -372,7 +372,7 @@ public class MainActivity extends Activity {
             arglist.add("-showspeed");
         }
 
-        int refreshRateInt = Integer.parseInt(refreshRate) + 1;
+        int refreshRateInt = Integer.parseInt(refreshRate);
         if (refreshRateInt > 0) {
             arglist.add("-refresh");
             arglist.add("" + refreshRateInt);
@@ -386,7 +386,7 @@ public class MainActivity extends Activity {
         }
         arglist.add("-dsprate");
         arglist.add(sampleRate);
-        arglist.add("-audio8");
+        arglist.add("-audio16");
       
         if (ntscMode) {
             arglist.add("-ntsc");
@@ -443,6 +443,8 @@ public class MainActivity extends Activity {
             arglist.add(gameRom);
         }
 
+        Log.d(TAG, "args" + arglist);
+        
         mGLView = new SDLSurfaceView(this, arglist);
         al.addView(mGLView);
         
