@@ -26,12 +26,12 @@ public class AtariKeys extends ConsoleKeys {
 
         // for each supported input, map it to an SDL key
         // SDL keys are defined in sdl/include/SDL_keysym.h
-//        _codeMap.put(SDLKeysym.SDLK_F9, "QUIT");
-//        _codeMap.put(SDLKeysym.SDLK_SPACE, "SPACE");
-//        _codeMap.put(SDLKeysym.SDLK_F4, "START");
-//        _codeMap.put(SDLKeysym.SDLK_F5, "RESET");
-//        _codeMap.put(SDLKeysym.SDLK_F2, "OPTION");
-//        _codeMap.put(SDLKeysym.SDLK_F3, "SELECT");
+        _codeMap.put(SDLKeysym.SDLK_F9, "QUIT");
+        _codeMap.put(SDLKeysym.SDLK_SPACE, "SPACE");
+        _codeMap.put(SDLKeysym.SDLK_F4, "START");
+        _codeMap.put(SDLKeysym.SDLK_F5, "RESET");
+        _codeMap.put(SDLKeysym.SDLK_F2, "OPTION");
+        _codeMap.put(SDLKeysym.SDLK_F3, "SELECT");
         _codeMap.put(SDLKeysym.SDLK_UP, "UP");
         _codeMap.put(SDLKeysym.SDLK_DOWN, "DOWN");
         _codeMap.put(SDLKeysym.SDLK_LEFT, "LEFT");
