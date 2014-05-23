@@ -54,6 +54,21 @@ public class MainActivity extends Activity {
     private static MainActivity _instance = null;
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
+    
+	private static String keyNames[] = { 
+		"UP", "DOWN", "LEFT", "RIGHT", 
+		"BTN_A", "BTN_B", "BTN_X", "BTN_Y", 
+		"TL", "TR", "TL2", "TR2",
+		"SELECT", "START"
+	};
+	
+	private static String keyNamesAtari[] = {
+		"UP", "DOWN", "LEFT", "RIGHT", 
+		"UP", "TRIGGER", "SPACE", "TRIGGER",
+		"OPTION", "HELP", "RESET", "QUIT",
+		"SELECT", "START"
+	};
+	
 
     private static class ButtonInfo {
         String name;
@@ -223,22 +238,7 @@ public class MainActivity extends Activity {
         if (_keymap.getNumberOfMappedKeys() == 0) {
         	Log.d(TAG, "Using AtariKeys");
             _keymap.reload(PreferenceManager.getDefaultSharedPreferences(this), AtariKeys.getInstance());
-            if (useGamepad) {
-	            _keymap.setMap("DPAD UP", "UP", AtariKeys.getInstance());
-	            _keymap.setMap("DPAD DOWN", "DOWN", AtariKeys.getInstance());
-	            _keymap.setMap("DPAD LEFT", "LEFT", AtariKeys.getInstance());
-	            _keymap.setMap("DPAD RIGHT", "RIGHT", AtariKeys.getInstance());
-	            _keymap.setMap("BACKQUOTE", "TRIGGER", AtariKeys.getInstance());
-	            _keymap.setMap("a", "TRIGGER", AtariKeys.getInstance());
-	            _keymap.setMap("c", "TRIGGER", AtariKeys.getInstance());
-	            _keymap.setMap("d", "TRIGGER", AtariKeys.getInstance());
-	            _keymap.setMap("m", "SELECT", AtariKeys.getInstance());
-	            _keymap.setMap("l", "START", AtariKeys.getInstance());
-	            _keymap.setMap("h", "OPTION", AtariKeys.getInstance());
-	            _keymap.setMap("i", "QUIT", AtariKeys.getInstance());
-	            _keymap.setMap("f", "HELP", AtariKeys.getInstance());
-	            _keymap.setMap("g", "RESET", AtariKeys.getInstance());
-            }
+            if (useGamepad) loadGamepadFromIntent();
         } else {
         	Log.d(TAG, "NOT Using AtariKeys");
         }
@@ -333,6 +333,20 @@ public class MainActivity extends Activity {
 
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+	}
+
+	private void loadGamepadFromIntent() {
+		for(int i=0; i<keyNames.length; i++) {
+			int keyCode = getIntent().getIntExtra("j1" + keyNames[i], 0);
+			if (keyCode>0) {
+				Integer atariKeyCode = AtariKeys.getInstance().getCode(keyNamesAtari[i]);
+				if (atariKeyCode == null) {
+					Log.d("REMAP", "Atari key not found: " + keyNamesAtari[i]);
+				} else {
+					_keymap.setMap(keyCode, atariKeyCode);
+				}
+			}
+		}
 	}
 
 	public void initSDL(boolean landscapeMode, boolean useGamepad)
