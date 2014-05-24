@@ -59,14 +59,14 @@ public class MainActivity extends Activity {
 		"UP", "DOWN", "LEFT", "RIGHT", 
 		"BTN_A", "BTN_B", "BTN_X", "BTN_Y", 
 		"TL", "TR", "TL2", "TR2",
-		"SELECT", "START"
+		"TL3", "TR3", "SELECT", "START"
 	};
 	
 	private static String keyNamesAtari[] = {
 		"UP", "DOWN", "LEFT", "RIGHT", 
 		"UP", "TRIGGER", "SPACE", "TRIGGER",
 		"OPTION", "HELP", "RESET", "QUIT",
-		"SELECT", "START"
+		"LOAD_STATE", "SAVE_STATE", "SELECT", "START"
 	};
 	
 
@@ -202,8 +202,12 @@ public class MainActivity extends Activity {
         Intent intent = getIntent();
         String romFile = intent.getStringExtra("game");
         String osRom = intent.getStringExtra("osrom");
+        String stateDir = intent.getStringExtra("stateDir");
+        String stateName = intent.getStringExtra("stateName");
         String sGamepad = intent.getStringExtra("gamepad");
         boolean useGamepad = sGamepad!=null && !sGamepad.equals("NONE");
+        
+        if (stateDir!=null) new File(stateDir).mkdirs();
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (romFile == null) {
@@ -216,6 +220,8 @@ public class MainActivity extends Activity {
 	    editor.putString("osrom", osRom);
 	    editor.putString("romdirectory", romDirectory);
 	    editor.putString("romfile", romFile);
+	    editor.putString("stateDir", stateDir);
+	    editor.putString("stateName", stateName);
 	    editor.commit();
 	    
 		// fullscreen mode
@@ -370,6 +376,8 @@ public class MainActivity extends Activity {
             gameRom = Cartridge.getInstance().prepareCartridge(gameRom);
         }
         String osRom =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osrom","");
+        String stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
+        String stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
         String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
         boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", true);
         boolean enableSound = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("sound", true);
@@ -451,6 +459,13 @@ public class MainActivity extends Activity {
                                        // try and load teh basic rom too
             arglist.add("none");
 
+        }
+        
+        if (stateDir!=null && stateName!=null) {
+        	arglist.add("-state_dir");
+        	arglist.add(stateDir);
+        	arglist.add("-state_name");
+        	arglist.add(stateName);
         }
 
         if (!gameRom.equals("")) {
@@ -595,11 +610,32 @@ public class MainActivity extends Activity {
 		super.onStop();
 		finish();
 	}
+	
+	private void sendLoadState(boolean down) {
+		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
+		SDLInterface.nativeKey(SDLKeysym.SDLK_l, down?1:0);
+	}
 
+	private void sendSaveState(boolean down) {
+		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
+		SDLInterface.nativeKey(SDLKeysym.SDLK_s, down?1:0);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
+
          final int nativeCode = _keymap.translate(keyCode);
+         
+         if (nativeCode == SDLKeysym.SDLK_F14) {
+        	 sendLoadState(true);
+        	 return true;
+         }
+         if (nativeCode == SDLKeysym.SDLK_F15) {
+        	 sendSaveState(true);
+        	 return true;
+         }
+         
          if (nativeCode > 0) {
         	 Log.v("com.droid800.MainActivity", "Send native code " + nativeCode);
              SDLInterface.nativeKey(nativeCode, 1);
@@ -657,6 +693,16 @@ Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHa
 	public boolean onKeyUp(int keyCode, final KeyEvent event) {
 Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
          final int nativeCode = _keymap.translate(keyCode);
+         
+         if (nativeCode == SDLKeysym.SDLK_F14) {
+        	 sendLoadState(false);
+        	 return true;
+         }
+         if (nativeCode == SDLKeysym.SDLK_F15) {
+        	 sendSaveState(false);
+        	 return true;
+         }
+
          if (nativeCode > 0) {
              SDLInterface.nativeKey(nativeCode, 0);
              return true;

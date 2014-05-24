@@ -18,6 +18,8 @@ extern char CFG_osb_filename[FILENAME_MAX];
 extern char CFG_xlxe_filename[FILENAME_MAX];
 extern char CFG_5200_filename[FILENAME_MAX];
 extern char CFG_basic_filename[FILENAME_MAX];
+extern char CFG_state_dir[FILENAME_MAX];
+extern char CFG_state_name[FILENAME_MAX];
 
 /* Compares the string PARAM with each entry in the CFG_STRINGS array
    (of size CFG_STRINGS_SIZE), and returns index under which PARAM is found.

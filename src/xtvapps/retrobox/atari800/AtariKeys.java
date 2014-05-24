@@ -39,6 +39,8 @@ public class AtariKeys extends ConsoleKeys {
         _codeMap.put(SDLKeysym.SDLK_KP_PERIOD, "TRIGGER");
         _codeMap.put(SDLKeysym.SDLK_ESCAPE, "ESCAPE");
         _codeMap.put(SDLKeysym.SDLK_F1, "F1");
+        _codeMap.put(SDLKeysym.SDLK_F14, "LOAD_STATE");
+        _codeMap.put(SDLKeysym.SDLK_F15, "SAVE_STATE");
 
         // enough for bounty bob
 //        _codeMap.put(SDLKeysym.SDLK_1, "1");

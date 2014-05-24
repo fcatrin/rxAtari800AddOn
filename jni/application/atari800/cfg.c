@@ -46,6 +46,8 @@ char CFG_osb_filename[FILENAME_MAX] = Util_FILENAME_NOT_SET;
 char CFG_xlxe_filename[FILENAME_MAX] = Util_FILENAME_NOT_SET;
 char CFG_5200_filename[FILENAME_MAX] = Util_FILENAME_NOT_SET;
 char CFG_basic_filename[FILENAME_MAX] = Util_FILENAME_NOT_SET;
+char CFG_state_dir[FILENAME_MAX] = Util_FILENAME_NOT_SET;
+char CFG_state_name[FILENAME_MAX] = Util_FILENAME_NOT_SET;
 
 
 void CFG_FindROMImages(const char *directory, int only_if_not_set)

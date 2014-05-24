@@ -1191,26 +1191,26 @@ static void AtariSettings(void)
 	}
 }
 
-static char state_filename[FILENAME_MAX] = "";
-
 static void SaveState(void)
 {
-	if (UI_driver->fGetSaveFilename(state_filename, UI_saved_files_dir, UI_n_saved_files_dir)) {
-		int result;
-		UI_driver->fMessage("Please wait while saving...", 0);
-		result = StateSav_SaveAtariState(state_filename, "wb", TRUE);
-		if (!result)
-			CantSave(state_filename);
-	}
+	char save_state_file[FILENAME_MAX];
+	sprintf(save_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
+
+	int result;
+	UI_driver->fMessage("Please wait while saving...", 0);
+	result = StateSav_SaveAtariState(save_state_file, "wb", TRUE);
+	if (!result)
+		CantSave(CFG_state_name);
 }
 
 static void LoadState(void)
 {
-	if (UI_driver->fGetLoadFilename(state_filename, UI_saved_files_dir, UI_n_saved_files_dir)) {
-		UI_driver->fMessage("Please wait while loading...", 0);
-		if (!StateSav_ReadAtariState(state_filename, "rb"))
-			CantLoad(state_filename);
-	}
+	char load_state_file[FILENAME_MAX];
+
+	sprintf(load_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
+	UI_driver->fMessage("Please wait while loading...", 0);
+	if (!StateSav_ReadAtariState(load_state_file, "rb"))
+		CantLoad(CFG_state_name);
 }
 
 /* CURSES_BASIC doesn't use artifacting or Atari800_collisions_in_skipped_frames,

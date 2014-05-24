@@ -31,7 +31,7 @@
 #  define PRINT(a) ControlManagerMessagePrint(a)
 #elif ANDROID
 #include <android/log.h>
-#  define PRINT(a) __android_log_print(ANDROID_LOG_INFO, "Atari800", a) 
+#  define PRINT(a) __android_log_print(ANDROID_LOG_INFO, "Atari800", "%s", a)
 /*#  define PRINT(a)*/
 #else
 #  define PRINT(a) printf("%s", a)

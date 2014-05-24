@@ -543,6 +543,12 @@ int Atari800_Initialise(int *argc, char *argv[])
 			else if (strcmp(argv[i], "-basic_rom") == 0) {
 				if (i_a) Util_strlcpy(CFG_basic_filename, argv[++i], sizeof(CFG_basic_filename)); else a_m = TRUE;
 			}
+			else if (strcmp(argv[i], "-state_dir") == 0) {
+				if (i_a) Util_strlcpy(CFG_state_dir, argv[++i], sizeof(CFG_state_dir)); else a_m = TRUE;
+			}
+			else if (strcmp(argv[i], "-state_name") == 0) {
+				if (i_a) Util_strlcpy(CFG_state_name, argv[++i], sizeof(CFG_state_name)); else a_m = TRUE;
+			}
 			else if (strcmp(argv[i], "-cart") == 0) {
 				if (i_a) rom_filename = argv[++i]; else a_m = TRUE;
 			}
