@@ -1,0 +1,156 @@
+### Eclipse Workspace Patch 1.0
+#P Droid800Activity
+Index: jni/application/atari800/atari_sdl.c
+===================================================================
+--- jni/application/atari800/atari_sdl.c	(revision 1712)
++++ jni/application/atari800/atari_sdl.c	(working copy)
+@@ -169,6 +169,7 @@
+ static SDL_Surface *MainScreen = NULL;
+ static SDL_Color colors[256];			/* palette */
+ static Uint16 Palette16[256];			/* 16-bit palette */
++static Uint16 Palette16a[256];			/* 16-bit palette */
+ static Uint32 Palette32[256];			/* 32-bit palette */
+ 
+ static VIDEOMODE_resolution_t desktop_resolution;
+@@ -201,7 +202,7 @@
+ /* This table holds default settings for all display modes. */
+ static struct display_mode_data_t display_modes[VIDEOMODE_MODE_SIZE] = {
+ 	/* Normal */
+-	{ Screen_WIDTH, Screen_HEIGHT, 0, /* bpp = 0 - autodetect */
++	{ 640, 480, 0, /* bpp = 0 - autodetect */
+ 	  &DisplayWithoutScaling },
+ 	/* NTSC Filter */
+ 	{ 640, 480, ATARI_NTSC_OUT_DEPTH,
+@@ -478,6 +479,7 @@
+ {
+ 	int i, rgb;
+ 	Uint32 c;
++	Uint32 calpha;
+ 	for (i = 0; i < 256; i++) {
+ 		rgb = Colours_table[i];
+ 		colors[i].r = (rgb & 0x00ff0000) >> 16;
+@@ -488,9 +490,13 @@
+ 		c =
+ 			SDL_MapRGB(MainScreen->format, colors[i].r, colors[i].g,
+ 					   colors[i].b);
++		calpha =
++			SDL_MapRGB(MainScreen->format, colors[i].r/2, colors[i].g/2,
++					   colors[i].b/2);
+ 		switch (MainScreen->format->BitsPerPixel) {
+ 		case 16:
+ 			Palette16[i] = (Uint16) c;
++			Palette16a[i] = (Uint16) 0;
+ 			break;
+ 		case 32:
+ 			Palette32[i] = (Uint32) c;
+@@ -624,12 +630,13 @@
+ 
+ 	resolutions = Util_malloc(num_modes * sizeof(VIDEOMODE_resolution_t));
+ 	for (i = 0; i < num_modes; i++) {
++		Log_print("Register mode from SDL_ListModes %ix%i (from %i)", modes[i]->w,  modes[i]->h, num_modes);
+ #ifdef ANDROID
+-        int width = 320;
+-        int height = 200;
+-        if (android_show_border == 1) {
+-            width = 336;
+-            height = 224;
++        int width = 640;
++        int height = 480;
++        if (android_show_border == 0) {
++            width = 672;
++            height = 448;
+         }
+         if (keep_aspect_ratio == 1) {
+ 
+@@ -2144,6 +2151,7 @@
+ static void DisplayWithoutScaling(Uint8 *screen)
+ {
+ 	register Uint32 quad;
++	register Uint32 quadalpha;
+ 	register Uint32 *start32;
+ 	register Uint8 c;
+ 	register int pos;
+@@ -2153,7 +2161,7 @@
+ 	pitch4 = MainScreen->pitch / 4;
+ 	start32 = (Uint32 *) MainScreen->pixels;
+ 	screen += Screen_WIDTH * VIDEOMODE_src_offset_top + VIDEOMODE_src_offset_left;
+-	i = VIDEOMODE_src_height;
++	i = VIDEOMODE_src_height / 2;
+ #ifdef ANDROID
+     // android is always 16bpp
+ 	start32 += pitch4 * VIDEOMODE_dest_offset_top + VIDEOMODE_dest_offset_left / 2;
+@@ -2163,13 +2171,16 @@
+ 			pos--;
+ 			c = screen[pos];
+ 			quad = Palette16[c] << 16;
++			quadalpha = Palette16a[c] << 16;
+ 			pos--;
+ 			c = screen[pos];
+ 			quad += Palette16[c];
++			quadalpha += Palette16a[c];
+ 			start32[pos >> 1] = quad;
++			start32[(pos >> 1) + pitch4] = quadalpha;
+ 		} while (pos > 0);
+ 		screen += Screen_WIDTH;
+-		start32 += pitch4;
++		start32 += pitch4*2;
+ 		i--;
+ 	}
+ #else
+Index: src/xtvapps/retrobox/atari800/MainActivity.java
+===================================================================
+--- src/xtvapps/retrobox/atari800/MainActivity.java	(revision 1700)
++++ src/xtvapps/retrobox/atari800/MainActivity.java	(working copy)
+@@ -409,6 +409,8 @@
+         arglist.add("-dsprate");
+         arglist.add(sampleRate);
+         arglist.add("-audio16");
++        
++        arglist.add("-nojoystick");
+       
+         if (ntscMode) {
+             arglist.add("-ntsc");
+@@ -461,6 +463,8 @@
+ 
+         }
+         
++        //arglist.add("-ntscemu");
++        
+         if (stateDir!=null && stateName!=null) {
+         	arglist.add("-state_dir");
+         	arglist.add(stateDir);
+Index: jni/application/atari800/videomode.c
+===================================================================
+--- jni/application/atari800/videomode.c	(revision 1700)
++++ jni/application/atari800/videomode.c	(working copy)
+@@ -232,6 +232,7 @@
+ {
+ 	unsigned int i;
+ 	unsigned int w, h;
++
+ 	if (rotate) {
+ 		w = display_modes[mode].min_h;
+ 		h = display_modes[mode].min_w;
+@@ -239,6 +240,8 @@
+ 		w = display_modes[mode].min_w;
+ 		h = display_modes[mode].min_h;
+ 	}
++	Log_print("Looking for resolution %ix%i", w, h);
++
+ 	if (resolutions[current_resolution].width >= w &&
+ 	    resolutions[current_resolution].height >= h)
+ 		/* Current resolution is OK for this display mode. */
+@@ -246,11 +249,13 @@
+ 
+ 	/* Search for resolution higher than minimal. */
+ 	for (i = 0; i < resolutions_size; i ++) {
++		Log_print("Available resolution %ix%i", resolutions[i].width, resolutions[i].height);
+ 		if (resolutions[i].width >= w &&
+ 		    resolutions[i].height >= h)
+ 			return &resolutions[i];
+ 	}
+ 
++	Log_print("No resolution found for %ix%i", w, h);
+ 	/* No resolution found! */
+ 	return NULL;
+ }

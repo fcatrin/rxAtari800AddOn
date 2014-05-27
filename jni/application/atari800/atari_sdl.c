@@ -2146,6 +2146,7 @@ static void DisplayWithoutScaling(Uint8 *screen)
 	register Uint32 quad;
 	register Uint32 *start32;
 	register Uint8 c;
+	register Uint16 w;
 	register int pos;
 	register int pitch4;
 	int i;
@@ -2158,15 +2159,33 @@ static void DisplayWithoutScaling(Uint8 *screen)
     // android is always 16bpp
 	start32 += pitch4 * VIDEOMODE_dest_offset_top + VIDEOMODE_dest_offset_left / 2;
 	while (i > 0) {
-		pos = VIDEOMODE_src_width;
+		pos = VIDEOMODE_src_width / 2;
 		do {
 			pos--;
-			c = screen[pos];
-			quad = Palette16[c] << 16;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
 			pos--;
-			c = screen[pos];
-			quad += Palette16[c];
-			start32[pos >> 1] = quad;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+			pos--;
+			w = ((Uint16 *)screen)[pos];
+			start32[pos] = (Palette16[w >> 8] << 16) | (Palette16[w & 0xff]);
+
 		} while (pos > 0);
 		screen += Screen_WIDTH;
 		start32 += pitch4;

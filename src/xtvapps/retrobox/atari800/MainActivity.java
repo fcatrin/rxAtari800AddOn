@@ -379,7 +379,7 @@ public class MainActivity extends Activity {
         String stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
         String stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
         String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
-        boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", true);
+        boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", false);
         boolean enableSound = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("sound", true);
         boolean showBorder = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showBorder", true);
         String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "44100");
