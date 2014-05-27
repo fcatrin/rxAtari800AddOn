@@ -201,28 +201,25 @@ public class MainActivity extends Activity {
         
         Intent intent = getIntent();
         String romFile = intent.getStringExtra("game");
-        String osRom = intent.getStringExtra("osrom");
         String stateDir = intent.getStringExtra("stateDir");
         String stateName = intent.getStringExtra("stateName");
         String sGamepad = intent.getStringExtra("gamepad");
+        String machine = intent.getStringExtra("machine");
+        String osromDir = intent.getStringExtra("osromDir");
         boolean useGamepad = sGamepad!=null && !sGamepad.equals("NONE");
         
         if (stateDir!=null) new File(stateDir).mkdirs();
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		if (romFile == null) {
-	        copyAssets();
-		    romFile = "/sdcard/bcquest.atr";
-		    osRom = this.getApplicationInfo().dataDir + "/bios/ATARIXL.ROM";
-		}
-	    String romDirectory = "/sdcard"; 
 	    SharedPreferences.Editor editor = preferences.edit();
-	    editor.putString("osrom", osRom);
-	    editor.putString("romdirectory", romDirectory);
+	    editor.putString("osromDir", osromDir);
 	    editor.putString("romfile", romFile);
 	    editor.putString("stateDir", stateDir);
 	    editor.putString("stateName", stateName);
+	    editor.putString("machine", machine);
 	    editor.commit();
+	    
+	    Log.d(TAG,  "Set machine:" + machine);
 	    
 		// fullscreen mode
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -368,14 +365,14 @@ public class MainActivity extends Activity {
 
 
         // set up the sdl command line args.
-        String systemType = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("systemType", "800XL");
+        String systemType = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("machine", "800XL");
         String gameRom = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("romfile","");
         Log.d("com.droid800.emulator", "Archivo a cargar " + gameRom);
         
         if (!systemType.equals("5200")) {
             gameRom = Cartridge.getInstance().prepareCartridge(gameRom);
         }
-        String osRom =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osrom","");
+        String osromDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osromDir", "");
         String stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
         String stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
         String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
@@ -393,7 +390,7 @@ public class MainActivity extends Activity {
         if (showSpeed) {
             arglist.add("-showspeed");
         }
-
+        
         int refreshRateInt = Integer.parseInt(refreshRate);
         if (refreshRateInt > 0) {
             arglist.add("-refresh");
@@ -414,52 +411,47 @@ public class MainActivity extends Activity {
             arglist.add("-ntsc");
         }
 
-        // if there is no osRom set - then we launch in "expert" mode.
-        // the use the configuration system built into the Atari800
-        // emulator
-        if (osRom.equals("")) {
-            // set the default config file location
-            arglist.add("-config");
-            arglist.add(android.os.Environment.getDataDirectory() + "/data/com.droid800/atari800.cfg");
+
+        if (systemType.equals("5200")) {
+        	String osROM = osromDir + "/5200.ROM";
+            arglist.add("-5200");
+            arglist.add("-5200_rom");
+            arglist.add(osROM);
+        }
+        else if (systemType.equals("800a")) {
+        	String osROM = osromDir + "/ATARIOSA.ROM";
+            arglist.add("-atari");
+            arglist.add("-osa_rom");
+            arglist.add(osROM);
+        }
+        else if (systemType.equals("800b")) {
+        	String osROM = osromDir + "/ATARIOSB.ROM";
+            arglist.add("-atari");
+            arglist.add("-osb_rom");
+            arglist.add(osROM);
         }
         else {
-            if (systemType.equals("5200")) {
-                arglist.add("-5200");
-                arglist.add("-5200_rom");
-                arglist.add(osRom);
+            if (systemType.equals("800XL")) {
+                arglist.add("-xl");
             }
-            else if (systemType.equals("800 (REV A)")) {
-                arglist.add("-atari");
-                arglist.add("-osa_rom");
-                arglist.add(osRom);
+            else if (systemType.equals("130XE")) {
+                arglist.add("-xe");
             }
-            else if (systemType.equals("800 (REV B)")) {
-                arglist.add("-atari");
-                arglist.add("-osb_rom");
-                arglist.add(osRom);
+            else if (systemType.equals("320XE")) {
+                arglist.add("-320xe");
             }
-            else {
-                if (systemType.equals("800XL")) {
-                    arglist.add("-xl");
-                }
-                else if (systemType.equals("130XE")) {
-                    arglist.add("-xe");
-                }
-                else if (systemType.equals("320XE")) {
-                    arglist.add("-320xe");
-                }
-                else if (systemType.equals("RAMBO")) {
-                    arglist.add("-RAMBO");
-                }
-                arglist.add("-xlxe_rom");
-                arglist.add(osRom);
+            else if (systemType.equals("RAMBO")) {
+                arglist.add("-RAMBO");
             }
-
-            arglist.add("-basic_rom"); // this is required or the emaulator will
-                                       // try and load teh basic rom too
-            arglist.add("none");
-
+            arglist.add("-xlxe_rom");
+            
+            String osROM = osromDir + "/ATARIXL.ROM";
+            arglist.add(osROM);
         }
+
+        arglist.add("-basic_rom"); // this is required or the emaulator will
+                                   // try and load teh basic rom too
+        arglist.add("none");
         
         if (stateDir!=null && stateName!=null) {
         	arglist.add("-state_dir");
