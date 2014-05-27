@@ -2415,11 +2415,14 @@ static int get_LPT_joystick_state(int fd)
 
 static void get_platform_PORT(Uint8 *s0, Uint8 *s1)
 {
+	int stick0, stick1;
+	stick0 = stick1 = INPUT_STICK_CENTRE;
+	*s0 = stick0;
+	*s1 = stick1;
+
 #ifdef ANDROID
     if (kbhits == NULL) return;
 #endif
-	int stick0, stick1;
-	stick0 = stick1 = INPUT_STICK_CENTRE;
 
 	if (PLATFORM_kbd_joy_0_enabled) {
 		if (kbhits[KBD_STICK_0_LEFT])
@@ -2485,11 +2488,14 @@ static void get_platform_PORT(Uint8 *s0, Uint8 *s1)
 
 static void get_platform_TRIG(Uint8 *t0, Uint8 *t1)
 {
+	int trig0, trig1, i;
+	trig0 = trig1 = 1;
+	*t0 = trig0;
+	*t1 = trig1;
+
 #ifdef ANDROID
     if (kbhits == NULL) return;
 #endif
-	int trig0, trig1, i;
-	trig0 = trig1 = 1;
 
 	if (PLATFORM_kbd_joy_0_enabled) {
 		trig0 = kbhits[KBD_TRIG_0] ? 0 : 1;
