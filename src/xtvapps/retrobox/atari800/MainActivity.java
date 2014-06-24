@@ -8,6 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import retrobox.vinput.JoystickEventDispatcher;
+import retrobox.vinput.KeyTranslator;
+import retrobox.vinput.Mapper;
+import retrobox.vinput.Mapper.ShortCut;
+import retrobox.vinput.VirtualEvent.MouseButton;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -55,21 +60,6 @@ public class MainActivity extends Activity {
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
     
-	private static String keyNames[] = { 
-		"UP", "DOWN", "LEFT", "RIGHT", 
-		"BTN_A", "BTN_B", "BTN_X", "BTN_Y", 
-		"TL", "TR", "TL2", "TR2",
-		"TL3", "TR3", "SELECT", "START"
-	};
-	
-	private static String keyNamesAtari[] = {
-		"UP", "DOWN", "LEFT", "RIGHT", 
-		"UP", "TRIGGER", "SPACE", "TRIGGER",
-		"OPTION", "HELP", "RESET", "QUIT",
-		"LOAD_STATE", "SAVE_STATE", "SELECT", "START"
-	};
-	
-
     private static class ButtonInfo {
         String name;
         int colspan;
@@ -147,45 +137,9 @@ public class MainActivity extends Activity {
     public static MainActivity getInstance() {
         return _instance;
     }
-    
-    private void copyAssets() {
-        AssetManager assetManager = getAssets();
-        Log.d(TAG, "Intentando extraer Atari XL bios");
-        String[] files = null;
-        try {
-            files = assetManager.list("bios");
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to get asset file list.", e);
-        }
-        for(String filename : files) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-              in = assetManager.open("bios/" + filename);
-              File outDir = new File( ctx.getApplicationInfo().dataDir + "/bios");
-              outDir.mkdir();
-              File outFile = new File( outDir,  filename);
-              Log.d(TAG, "bios extraida a " + outFile.getAbsolutePath());
-              out = new FileOutputStream(outFile);
-              copyFile(in, out);
-              in.close();
-              in = null;
-              out.flush();
-              out.close();
-              out = null;
-            } catch(IOException e) {
-                Log.e(TAG, "Failed to copy asset file: " + filename, e);
-            }       
-        }
-    }
-    
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-          out.write(buffer, 0, read);
-        }
-    }
+
+	private static Mapper mapper;
+	private VirtualEventDispatcher vinputDispatcher;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -241,11 +195,24 @@ public class MainActivity extends Activity {
         if (_keymap.getNumberOfMappedKeys() == 0) {
         	Log.d(TAG, "Using AtariKeys");
             _keymap.reload(PreferenceManager.getDefaultSharedPreferences(this), AtariKeys.getInstance());
-            if (useGamepad) loadGamepadFromIntent();
         } else {
         	Log.d(TAG, "NOT Using AtariKeys");
         }
-
+        
+        KeyTranslator.init();
+        KeyTranslator.addTranslation("ATR_LEFT", SDLKeysym.SDLK_LEFT);
+        KeyTranslator.addTranslation("ATR_RIGHT", SDLKeysym.SDLK_RIGHT);
+        KeyTranslator.addTranslation("ATR_UP", SDLKeysym.SDLK_UP);
+        KeyTranslator.addTranslation("ATR_DOWN", SDLKeysym.SDLK_DOWN);
+        KeyTranslator.addTranslation("ATR_RESET", SDLKeysym.SDLK_F5);
+        KeyTranslator.addTranslation("ATR_OPTION", SDLKeysym.SDLK_F2);
+        KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
+        KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
+        KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
+                
+        vinputDispatcher = new VirtualEventDispatcher();
+        mapper = new Mapper(getIntent(), vinputDispatcher);
+        
         SDLInterface.setLeftKeycode(SDLKeysym.SDLK_LEFT) ;
         SDLInterface.setRightKeycode(SDLKeysym.SDLK_RIGHT) ;
         SDLInterface.setUpKeycode(SDLKeysym.SDLK_UP);
@@ -336,20 +303,6 @@ public class MainActivity extends Activity {
 
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-	}
-
-	private void loadGamepadFromIntent() {
-		for(int i=0; i<keyNames.length; i++) {
-			int keyCode = getIntent().getIntExtra("j1" + keyNames[i], 0);
-			if (keyCode>0) {
-				Integer atariKeyCode = AtariKeys.getInstance().getCode(keyNamesAtari[i]);
-				if (atariKeyCode == null) {
-					Log.d("REMAP", "Atari key not found: " + keyNamesAtari[i]);
-				} else {
-					_keymap.setMap(keyCode, atariKeyCode);
-				}
-			}
-		}
 	}
 
 	public void initSDL(boolean landscapeMode, boolean useGamepad)
@@ -617,6 +570,8 @@ public class MainActivity extends Activity {
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 
+		if (mapper.handleKeyEvent(keyCode, true)) return true;
+
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -684,6 +639,9 @@ Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHa
 	@Override
 	public boolean onKeyUp(int keyCode, final KeyEvent event) {
 Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
+
+		if (mapper.handleKeyEvent(keyCode, false)) return true;
+
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -824,7 +782,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
         _virtualControllerManager.activateLastController();
     }
 
-    private void onQuitEmulator() {
+    protected void onQuitEmulator() {
 
 //        // TODO pause the emulator
 //        SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_PAUSE);
@@ -838,8 +796,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //Stop the activity
-                    MainActivity.this.finish();  
-                    SDLInterface.nativeQuit();  
+                	shutdown();
                 }
 
              })
@@ -853,6 +810,11 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 
              })
             .show();
+    }
+    
+    public void shutdown() {
+        MainActivity.this.finish();  
+        SDLInterface.nativeQuit();  
     }
 
     /**
@@ -933,4 +895,32 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
 
+    class VirtualEventDispatcher implements JoystickEventDispatcher {
+
+		@Override
+		public void sendKey(int keyCode, boolean down) {
+			SDLInterface.nativeKey(keyCode, down?1:0);
+		}
+
+		@Override
+		public void sendMouseButton(MouseButton button, boolean down) {}
+
+		@Override
+		public boolean handleShortcut(ShortCut shortcut, boolean down) {
+			switch(shortcut) {
+			case EXIT:
+				shutdown();
+				return true;
+			case LOAD_STATE:
+				sendLoadState(down);
+				return true;
+			case SAVE_STATE:
+				sendSaveState(down);
+				return true;
+			default:
+				return false;
+			}
+		}
+    }
+    
 }
