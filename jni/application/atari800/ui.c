@@ -1197,7 +1197,7 @@ static void SaveState(void)
 	sprintf(save_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
 
 	int result;
-	UI_driver->fMessage("Please wait while saving...", 0);
+	//UI_driver->fMessage("Please wait while saving...", 0);
 	result = StateSav_SaveAtariState(save_state_file, "wb", TRUE);
 	if (!result)
 		CantSave(CFG_state_name);
@@ -1208,7 +1208,7 @@ static void LoadState(void)
 	char load_state_file[FILENAME_MAX];
 
 	sprintf(load_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
-	UI_driver->fMessage("Please wait while loading...", 0);
+	//UI_driver->fMessage("Please wait while loading...", 0);
 	if (!StateSav_ReadAtariState(load_state_file, "rb"))
 		CantLoad(CFG_state_name);
 }

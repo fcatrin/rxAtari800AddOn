@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
+import android.widget.Toast;
 
 import com.tvi910.android.core.AccelerometerJoystick;
 import com.tvi910.android.core.ButtonPanelController;
@@ -894,6 +895,10 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     private Keymap _keymap = null;
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
+    
+    protected void toastMessage(String message) {
+    	Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
     class VirtualEventDispatcher implements JoystickEventDispatcher {
 
@@ -913,9 +918,11 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 				return true;
 			case LOAD_STATE:
 				sendLoadState(down);
+				toastMessage("State was restored");
 				return true;
 			case SAVE_STATE:
 				sendSaveState(down);
+				toastMessage("State was saved");
 				return true;
 			default:
 				return false;
