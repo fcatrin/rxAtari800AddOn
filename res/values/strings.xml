@@ -37,8 +37,11 @@
     
     <string name="testButton">Test Button</string>
 
+    <string name="load_state">Load State</string>
+    <string name="save_state">Save State</string>
+    
     <!-- quit confirmation dialog -->
-    <string name="quit">Retrobox</string>
+    <string name="quit">Quit</string>
     <string name="really_quit">Back to Retrobox?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

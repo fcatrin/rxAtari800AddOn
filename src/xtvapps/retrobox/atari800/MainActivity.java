@@ -2,10 +2,6 @@
 package xtvapps.retrobox.atari800;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import retrobox.vinput.JoystickEventDispatcher;
@@ -20,18 +16,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -525,9 +520,10 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onPause() {
         Log.v("com.droid800.MainActivity", "Paused");
+        /*
 		if( wakeLock != null ) {
 			wakeLock.release();
-        }
+        }*/
 		super.onPause();
 		if( mGLView != null ) {
 			mGLView.onPause();
@@ -537,9 +533,10 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
         Log.v("com.droid800.MainActivity", "Resumed");
+        /*
 		if( wakeLock != null ) {
 			wakeLock.acquire();
-        }
+        }*/
 		super.onResume();
 		if( mGLView != null ) {
 			mGLView.onResume();
@@ -818,63 +815,6 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
         SDLInterface.nativeQuit();  
     }
 
-    /**
-     * Called when your activity's options menu needs to be created.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        // Inflate the currently selected menu XML resource.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.emulator_menu, menu);
-        return true;
-    }
-
-    /**
-     * Called when your activity's options menu needs to be created.
-     */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public void onOptionsMenuClosed(Menu menu) {
-    }
-
-    /**
-     * Called when a menu item is selected.
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	int itemId = item.getItemId();
-    	if (itemId == R.id.menu_joystick) {
-    		_virtualControllerManager.setActiveController("Virtual Joystick");
-            return true;
-    	}
-        if (itemId == R.id.menu_keyboard) {
-        	_virtualControllerManager.setActiveController("Virtual Keyboard");
-        	return true;
-        }
-        if (itemId == R.id.menu_tilt) {
-        	_virtualControllerManager.setActiveController("Tilt Joystick");
-        	return true;
-        }
-        if (itemId == R.id.menu_cp) {
-        	_virtualControllerManager.setActiveController("Control Panel");
-        	return true;
-        }
-        if (itemId == R.id.menu_reset) {
-        	SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F5, 200);
-        	return true;
-        }
-        if (itemId == R.id.menu_start) {
-        	SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F4, 200);
-        	return true;
-        }
-        return  super.onOptionsItemSelected(item);
-    }
-
     // virtual controllers and manager
     private TouchpadJoystick _touchpadJoystick = null;
 //    private TouchPaddle _touchPaddle = null;
@@ -896,8 +836,79 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
     
+    
     protected void toastMessage(String message) {
     	Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    
+	@Override
+	public void onBackPressed() {
+		uiQuit();
+	}
+	
+    static final private int LOAD_ID = Menu.FIRST +1;
+    static final private int SAVE_ID = Menu.FIRST +2;
+    static final private int QUIT_ID = Menu.FIRST +3;
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        menu.add(0, LOAD_ID, 0, R.string.load_state);
+        menu.add(0, SAVE_ID, 0, R.string.save_state);
+        menu.add(0, QUIT_ID, 0, R.string.quit);
+        
+        return true;
+    }
+    
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	if (item != null) {
+	        switch (item.getItemId()) {
+	        case LOAD_ID : uiLoadState(); return true;
+	        case SAVE_ID : uiSaveState(); return true;
+	        case QUIT_ID : uiQuit(); return true;
+	        }
+    	}
+        return super.onMenuItemSelected(featureId, item);
+    }
+    
+    @Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		onPause();
+		return super.onMenuOpened(featureId, menu);
+	}
+
+	@Override
+	public void onOptionsMenuClosed(Menu menu) {
+		onResume();
+		super.onOptionsMenuClosed(menu);
+	}
+    
+    protected void uiLoadState() {
+    	sendLoadState(true);
+    	new Handler().postDelayed(new Runnable(){
+			@Override
+			public void run() {
+				sendLoadState(false);
+				toastMessage("State was restored");
+			}
+		}, 50);
+    }
+
+    protected void uiSaveState() {
+    	sendSaveState(true);
+    	new Handler().postDelayed(new Runnable(){
+			@Override
+			public void run() {
+				sendSaveState(false);
+				toastMessage("State was saved");
+			}
+		}, 50);
+    }
+
+    protected void uiQuit() {
+    	shutdown();
     }
 
     class VirtualEventDispatcher implements JoystickEventDispatcher {
@@ -913,17 +924,10 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 		@Override
 		public boolean handleShortcut(ShortCut shortcut, boolean down) {
 			switch(shortcut) {
-			case EXIT:
-				shutdown();
-				return true;
-			case LOAD_STATE:
-				sendLoadState(down);
-				toastMessage("State was restored");
-				return true;
-			case SAVE_STATE:
-				sendSaveState(down);
-				toastMessage("State was saved");
-				return true;
+			case EXIT: if (!down) uiQuit(); return true;
+			case LOAD_STATE: if (!down) uiLoadState(); return true;
+			case SAVE_STATE: if (!down) uiSaveState(); return true;
+			case MENU : if (!down) openOptionsMenu(); return true;
 			default:
 				return false;
 			}
