@@ -4,11 +4,11 @@ package xtvapps.retrobox.atari800;
 import java.io.File;
 import java.util.ArrayList;
 
-import retrobox.vinput.JoystickEventDispatcher;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
 import retrobox.vinput.VirtualEvent.MouseButton;
+import retrobox.vinput.VirtualEventDispatcher;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -135,7 +135,7 @@ public class MainActivity extends Activity {
     }
 
 	private static Mapper mapper;
-	private VirtualEventDispatcher vinputDispatcher;
+	private VirtualInputDispatcher vinputDispatcher;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +206,7 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
         KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
                 
-        vinputDispatcher = new VirtualEventDispatcher();
+        vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
         
         SDLInterface.setLeftKeycode(SDLKeysym.SDLK_LEFT) ;
@@ -911,7 +911,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     	shutdown();
     }
 
-    class VirtualEventDispatcher implements JoystickEventDispatcher {
+    class VirtualInputDispatcher implements VirtualEventDispatcher {
 
 		@Override
 		public void sendKey(int keyCode, boolean down) {
