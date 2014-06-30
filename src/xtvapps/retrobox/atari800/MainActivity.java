@@ -162,6 +162,7 @@ public class MainActivity extends Activity {
         String sGamepad = intent.getStringExtra("gamepad");
         String machine = intent.getStringExtra("machine");
         String osromDir = intent.getStringExtra("osromDir");
+        String videoSystem = intent.getStringExtra("videoSystem");
         boolean useGamepad = sGamepad!=null && !sGamepad.equals("NONE");
         
         if (stateDir!=null) new File(stateDir).mkdirs();
@@ -173,6 +174,7 @@ public class MainActivity extends Activity {
 	    editor.putString("stateDir", stateDir);
 	    editor.putString("stateName", stateName);
 	    editor.putString("machine", machine);
+	    editor.putString("videoSystem", videoSystem);
 	    editor.commit();
 	    
 	    Log.d(TAG,  "Set machine:" + machine);
@@ -212,6 +214,7 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
         KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
         KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
+        KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
         
         // haremos esto mejor en otra vida
         for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {
