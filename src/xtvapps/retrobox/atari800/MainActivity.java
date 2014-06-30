@@ -333,7 +333,7 @@ public class MainActivity extends Activity {
 	        	int h = mGLView.getHeight();
 	        	Overlay.initJoystickOverlay(w, h);
 
-	            ExtraButtons.initExtraButtons(MainActivity.this, getIntent().getStringExtra("buttons"), mGLView.getWidth(), mGLView.getHeight(), false);
+	            ExtraButtons.initExtraButtons(MainActivity.this, getIntent().getStringExtra("buttons"), mGLView.getWidth(), mGLView.getHeight(), true);
 	        }
 	    });
         
