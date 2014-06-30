@@ -459,7 +459,7 @@ public class MainActivity extends Activity {
         if (!useGamepad)  _touchpadJoystick.addToAbsoluteLayout(al, display);
 
         // _buttonPanel.addToLayout((ViewGroup)al);
-        _keyboardOverlay.getButtonPanel().addToLayout((ViewGroup)al);
+        //_keyboardOverlay.getButtonPanel().addToLayout((ViewGroup)al);
         extraButtonsView.addToLayout((ViewGroup)al);
         
 //        _buttonPanel.showPanel();
@@ -480,20 +480,20 @@ public class MainActivity extends Activity {
         _accelerometerJoystick = AccelerometerJoystick.getInstance(this);
 //        _touchPaddle = new TouchPaddle(this,getWindowManager().getDefaultDisplay().getHeight());
         setupTouchpadJoystick();
-        _buttonPanelController = new ButtonPanelController(this, _buttonPanel);
-        _nullController = new NullController(this);
+        //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
+        //_nullController = new NullController(this);
         extraButtonsController = new ExtraButtonsController(this, extraButtonsView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
-        _keyboardOverlay = new KeyboardOverlay(this, landscapeMode, keyboardAlpha);
-        _keyboardOverlay.getButtonPanel().setPanelButtonCallback(keyboardSliderCallback);
+        //_keyboardOverlay = new KeyboardOverlay(this, landscapeMode, keyboardAlpha);
+        //_keyboardOverlay.getButtonPanel().setPanelButtonCallback(keyboardSliderCallback);
 
 
         _virtualControllerManager.add("Tilt Joystick", _accelerometerJoystick);
         //_virtualControllerManager.add("Control Panel", _buttonPanelController);
-        _virtualControllerManager.add("Keymap", _nullController);
-        _virtualControllerManager.add("Virtual Keyboard", _keyboardOverlay);
+        //_virtualControllerManager.add("Keymap", _nullController);
+        //_virtualControllerManager.add("Virtual Keyboard", _keyboardOverlay);
         _virtualControllerManager.add("Virtual Joystick", _touchpadJoystick);
         _virtualControllerManager.add("Extra Buttons", extraButtonsController);
     }
@@ -696,7 +696,9 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
              SDLInterface.nativeKey(nativeCode, 0);
              return true;
          }
-         else if (keyCode == 4) {
+         else if (keyCode == 4) 
+           {
+        	 /*
             if (_keyboardOverlay.getButtonPanel().isVisible()) {
                 hideKeyboard();
                 return true;
@@ -706,7 +708,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
                     hideControlPanel();
                     return true;
                 }
-            }
+            }*/
 
             uiQuitConfirm();
             return true;
@@ -790,6 +792,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     /**
      * A call back for when the user presses the start button
      */
+    /*
     ButtonCallback keyboardSliderCallback = new ButtonCallback() {
         public void onButtonUp() {
             if (_keyboardOverlay.getButtonPanel().isVisible()) {
@@ -800,6 +803,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
             }
         }
     };
+    */
 
     /**
      * A call back for when the user presses the start button
@@ -842,9 +846,9 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 //    private TouchPaddle _touchPaddle = null;
     private AccelerometerJoystick _accelerometerJoystick = null;
 //    private AtariKeypad _atariKeypad = null;
-    private ButtonPanelController _buttonPanelController = null;
-    private NullController _nullController = null;
-    private KeyboardOverlay _keyboardOverlay;
+    //private ButtonPanelController _buttonPanelController = null;
+    //private NullController _nullController = null;
+    //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
     private ExtraButtonsController extraButtonsController = null;
 
