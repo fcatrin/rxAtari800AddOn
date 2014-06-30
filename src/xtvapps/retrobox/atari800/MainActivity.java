@@ -7,17 +7,21 @@ import java.util.ArrayList;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
+import retrobox.vinput.QuitHandler;
+import retrobox.vinput.QuitHandler.QuitHandlerCallback;
 import retrobox.vinput.VirtualEvent.MouseButton;
 import retrobox.vinput.VirtualEventDispatcher;
+import retrobox.vinput.overlay.ExtraButtons;
+import retrobox.vinput.overlay.Overlay;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +34,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
@@ -72,7 +78,7 @@ public class MainActivity extends Activity {
         QuitEmulatorCallback() {
         }
         public void onButtonUp() {
-            MainActivity.getInstance().onQuitEmulator();
+            MainActivity.getInstance().uiQuitConfirm();
         }   
     }
 
@@ -205,6 +211,17 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
         KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
         KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
+        KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
+        
+        // haremos esto mejor en otra vida
+        for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {
+        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
+        	KeyTranslator.addTranslation(atariKey, i);
+        }
+        for(int i=SDLKeysym.SDLK_0; i<=SDLKeysym.SDLK_9; i++) {
+        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
+        	KeyTranslator.addTranslation(atariKey, i);
+        }
                 
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
@@ -215,6 +232,8 @@ public class MainActivity extends Activity {
         SDLInterface.setDownKeycode(SDLKeysym.SDLK_DOWN) ;
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
 
+        extraButtonsView = new ExtraButtonsView(this);
+        
         if (landscapeMode) {
             _buttonPanel = new ButtonPanel(
                 this, // context
@@ -299,6 +318,22 @@ public class MainActivity extends Activity {
 
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        
+
+
+
+        ViewTreeObserver observer = mGLView.getViewTreeObserver();
+		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+	        public void onGlobalLayout() {
+	        	int w = mGLView.getWidth();
+	        	int h = mGLView.getHeight();
+	        	Overlay.initJoystickOverlay(w, h);
+
+	            ExtraButtons.initExtraButtons(MainActivity.this, getIntent().getStringExtra("buttons"), mGLView.getWidth(), mGLView.getHeight(), false);
+	        }
+	    });
+        
 	}
 
 	public void initSDL(boolean landscapeMode, boolean useGamepad)
@@ -420,8 +455,10 @@ public class MainActivity extends Activity {
         
         if (!useGamepad)  _touchpadJoystick.addToAbsoluteLayout(al, display);
 
-        _buttonPanel.addToLayout((ViewGroup)al);
+        // _buttonPanel.addToLayout((ViewGroup)al);
         _keyboardOverlay.getButtonPanel().addToLayout((ViewGroup)al);
+        extraButtonsView.addToLayout((ViewGroup)al);
+        
 //        _buttonPanel.showPanel();
 
 		// Receive keyboard events
@@ -442,7 +479,7 @@ public class MainActivity extends Activity {
         setupTouchpadJoystick();
         _buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         _nullController = new NullController(this);
-
+        extraButtonsController = new ExtraButtonsController(this, extraButtonsView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
@@ -451,10 +488,11 @@ public class MainActivity extends Activity {
 
 
         _virtualControllerManager.add("Tilt Joystick", _accelerometerJoystick);
-        _virtualControllerManager.add("Control Panel", _buttonPanelController);
+        //_virtualControllerManager.add("Control Panel", _buttonPanelController);
         _virtualControllerManager.add("Keymap", _nullController);
         _virtualControllerManager.add("Virtual Keyboard", _keyboardOverlay);
         _virtualControllerManager.add("Virtual Joystick", _touchpadJoystick);
+        _virtualControllerManager.add("Extra Buttons", extraButtonsController);
     }
 
     private void setupTouchpadJoystick() {
@@ -667,7 +705,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
                 }
             }
 
-            onQuitEmulator();
+            uiQuitConfirm();
             return true;
          }
          else if (keyCode == 67) {
@@ -707,6 +745,8 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	@Override
 	public boolean dispatchTouchEvent(final MotionEvent ev) {
         if (!super.dispatchTouchEvent(ev)) {
+        	if (extraButtonsController.getIsActive() && extraButtonsController.onTouchEvent(ev)) return true;
+        	
 		    if(_touchpadJoystick.getIsActive()) {
 			    boolean ret = _touchpadJoystick.onTouchEvent(ev);
                 // if we don't sleep here we get way to many motion events.
@@ -779,37 +819,16 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     private void hideKeyboard() {
         _virtualControllerManager.activateLastController();
     }
-
-    protected void onQuitEmulator() {
-
-//        // TODO pause the emulator
-//        SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_PAUSE);
-
-        new AlertDialog.Builder(this)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setTitle(R.string.quit)
-            .setMessage(R.string.really_quit)
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //Stop the activity
-                	shutdown();
-                }
-
-             })
-            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-// TODO unpause the emulator
-//                    SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_PAUSE);
-                }
-
-             })
-            .show();
+    
+    private void hideExtraButtons() {
+    	extraButtonsController.deactivate();
     }
     
+    private void showExtrabuttons() {
+    	extraButtonsController.activate();
+    }
+
+   
     public void shutdown() {
         MainActivity.this.finish();  
         SDLInterface.nativeQuit();  
@@ -824,6 +843,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     private NullController _nullController = null;
     private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
+    private ExtraButtonsController extraButtonsController = null;
 
 
 	private SDLSurfaceView mGLView = null;
@@ -832,9 +852,11 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	private PowerManager.WakeLock wakeLock = null;
 	private boolean sdlInited = false;
     private ButtonPanel _buttonPanel;
+    private ExtraButtonsView extraButtonsView;
     private Keymap _keymap = null;
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
+	private boolean buttonsVisible = false;
     
     
     protected void toastMessage(String message) {
@@ -846,16 +868,20 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 		uiQuit();
 	}
 	
+	static final private int CANCEL_ID = Menu.FIRST;
     static final private int LOAD_ID = Menu.FIRST +1;
     static final private int SAVE_ID = Menu.FIRST +2;
     static final private int QUIT_ID = Menu.FIRST +3;
+    static final private int BUTTONS_ID = Menu.FIRST +4;
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
+        menu.add(0, CANCEL_ID, 0, "Cancel");
         menu.add(0, LOAD_ID, 0, R.string.load_state);
         menu.add(0, SAVE_ID, 0, R.string.save_state);
+        menu.add(0, BUTTONS_ID, 0, "Show Buttons");
         menu.add(0, QUIT_ID, 0, R.string.quit);
         
         return true;
@@ -868,6 +894,8 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	        case LOAD_ID : uiLoadState(); return true;
 	        case SAVE_ID : uiSaveState(); return true;
 	        case QUIT_ID : uiQuit(); return true;
+	        case CANCEL_ID : return true;
+	        case BUTTONS_ID : uiToggleButtons(); return true;
 	        }
     	}
         return super.onMenuItemSelected(featureId, item);
@@ -883,6 +911,12 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	public void onOptionsMenuClosed(Menu menu) {
 		onResume();
 		super.onOptionsMenuClosed(menu);
+	}
+	
+	protected void uiToggleButtons() {
+		buttonsVisible = !buttonsVisible ;
+		if (buttonsVisible) showExtrabuttons();
+		else hideExtraButtons();
 	}
     
     protected void uiLoadState() {
@@ -907,6 +941,15 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 		}, 50);
     }
 
+    protected void uiQuitConfirm() {
+    	QuitHandler.askForQuit(this, new QuitHandlerCallback() {
+			@Override
+			public void onQuit() {
+				uiQuit();
+			}
+		});
+    }
+
     protected void uiQuit() {
     	shutdown();
     }
@@ -924,7 +967,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 		@Override
 		public boolean handleShortcut(ShortCut shortcut, boolean down) {
 			switch(shortcut) {
-			case EXIT: if (!down) uiQuit(); return true;
+			case EXIT: if (!down) uiQuitConfirm(); return true;
 			case LOAD_STATE: if (!down) uiLoadState(); return true;
 			case SAVE_STATE: if (!down) uiSaveState(); return true;
 			case MENU : if (!down) openOptionsMenu(); return true;
