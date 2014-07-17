@@ -16,7 +16,7 @@
     
     <application 
         android:label="@string/app_name" 
-        android:icon="@drawable/droid800_icon">
+        android:icon="@drawable/retrobox">
 
         <activity 
            android:name="xtvapps.retrobox.atari800.Droid800Activity"
