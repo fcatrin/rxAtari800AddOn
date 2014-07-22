@@ -760,11 +760,9 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
             		OverlayNew.requiresRedraw = false;
         			gamepadView.invalidate();
         		}
-        		sleep();
         		return true;
         	}
         	if (extraButtonsController.getIsActive() && extraButtonsController.onTouchEvent(ev)) {
-        		sleep();
         		return true;
         	}
         	
