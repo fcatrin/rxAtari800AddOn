@@ -12,6 +12,8 @@ import retrobox.vinput.QuitHandler.QuitHandlerCallback;
 import retrobox.vinput.VirtualEvent.MouseButton;
 import retrobox.vinput.VirtualEventDispatcher;
 import retrobox.vinput.overlay.ExtraButtons;
+import retrobox.vinput.overlay.ExtraButtonsController;
+import retrobox.vinput.overlay.ExtraButtonsView;
 import retrobox.vinput.overlay.GamepadController;
 import retrobox.vinput.overlay.GamepadView;
 import retrobox.vinput.overlay.OverlayNew;
@@ -483,7 +485,7 @@ public class MainActivity extends Activity {
         setupTouchpadJoystick();
         //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         //_nullController = new NullController(this);
-        extraButtonsController = new ExtraButtonsController(this, extraButtonsView);
+        extraButtonsController = new ExtraButtonsControllerWrapper(this, new ExtraButtonsController(), extraButtonsView);
         gamepadController = new GamepadControllerWrapper(this, new GamepadController(), gamepadView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
@@ -864,7 +866,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     //private NullController _nullController = null;
     //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
-    private ExtraButtonsController extraButtonsController = null;
+    private ExtraButtonsControllerWrapper extraButtonsController = null;
     private GamepadControllerWrapper gamepadController = null;
 
 
