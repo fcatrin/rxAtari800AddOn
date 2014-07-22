@@ -13,6 +13,7 @@ import retrobox.vinput.VirtualEvent.MouseButton;
 import retrobox.vinput.VirtualEventDispatcher;
 import retrobox.vinput.overlay.ExtraButtons;
 import retrobox.vinput.overlay.Overlay;
+import retrobox.vinput.overlay.OverlayNew;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,8 +21,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,14 +41,11 @@ import android.widget.AbsoluteLayout;
 import android.widget.Toast;
 
 import com.tvi910.android.core.AccelerometerJoystick;
-import com.tvi910.android.core.ButtonPanelController;
 import com.tvi910.android.core.Keymap;
-import com.tvi910.android.core.NullController;
 import com.tvi910.android.core.TouchpadJoystick;
 import com.tvi910.android.core.VirtualControllerManager;
 import com.tvi910.android.core.buttonpanel.ButtonCallback;
 import com.tvi910.android.core.buttonpanel.ButtonPanel;
-import com.tvi910.android.core.buttonpanel.KeyboardOverlay;
 import com.tvi910.android.sdl.AudioThread;
 import com.tvi910.android.sdl.LoadLibrary;
 import com.tvi910.android.sdl.SDLInterface;
@@ -61,6 +57,7 @@ public class MainActivity extends Activity {
     private static MainActivity _instance = null;
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
+    public static final OverlayNew overlay = new OverlayNew();
     
     private static class ButtonInfo {
         String name;
@@ -236,6 +233,7 @@ public class MainActivity extends Activity {
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
 
         extraButtonsView = new ExtraButtonsView(this);
+        gamepadView = new GamepadView(this);
         
         if (landscapeMode) {
             _buttonPanel = new ButtonPanel(
@@ -332,6 +330,8 @@ public class MainActivity extends Activity {
 	        	int w = mGLView.getWidth();
 	        	int h = mGLView.getHeight();
 	        	Overlay.initJoystickOverlay(w, h);
+	        	String overlayConfig = getIntent().getStringExtra("OVERLAY");
+	        	if (overlayConfig!=null) overlay.init(overlayConfig, w, h);
 
 	            ExtraButtons.initExtraButtons(MainActivity.this, getIntent().getStringExtra("buttons"), mGLView.getWidth(), mGLView.getHeight(), true);
 	        }
@@ -369,7 +369,7 @@ public class MainActivity extends Activity {
         String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "44100");
         boolean stretchToFit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("stretchtofit", true);
         boolean ntscMode = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("videoSystem", "NTSC").equals("NTSC");
-        String leftController = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("leftControllerId", "Virtual Joystick");
+        String leftController = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("leftControllerId", "Gamepad");
         setupVirtualControllers(landscapeMode);
 
         ArrayList<String> arglist = new ArrayList<String>();
@@ -456,7 +456,9 @@ public class MainActivity extends Activity {
         mGLView = new SDLSurfaceView(this, arglist);
         al.addView(mGLView);
         
-        if (!useGamepad)  _touchpadJoystick.addToAbsoluteLayout(al, display);
+        if (!useGamepad)  {
+            gamepadView.addToLayout((ViewGroup)al);
+        }
 
         // _buttonPanel.addToLayout((ViewGroup)al);
         //_keyboardOverlay.getButtonPanel().addToLayout((ViewGroup)al);
@@ -471,7 +473,9 @@ public class MainActivity extends Activity {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Droid800 - do not dim screen");
 
-        _virtualControllerManager.setActiveController(leftController);
+		if (!useGamepad)  {
+			_virtualControllerManager.setActiveController("Gamepad");
+		}
 	}
 
     private void setupVirtualControllers(boolean landscapeMode) {
@@ -483,6 +487,7 @@ public class MainActivity extends Activity {
         //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         //_nullController = new NullController(this);
         extraButtonsController = new ExtraButtonsController(this, extraButtonsView);
+        gamepadController = new GamepadController(this, gamepadView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
@@ -490,11 +495,12 @@ public class MainActivity extends Activity {
         //_keyboardOverlay.getButtonPanel().setPanelButtonCallback(keyboardSliderCallback);
 
 
-        _virtualControllerManager.add("Tilt Joystick", _accelerometerJoystick);
+        //_virtualControllerManager.add("Tilt Joystick", _accelerometerJoystick);
         //_virtualControllerManager.add("Control Panel", _buttonPanelController);
         //_virtualControllerManager.add("Keymap", _nullController);
         //_virtualControllerManager.add("Virtual Keyboard", _keyboardOverlay);
-        _virtualControllerManager.add("Virtual Joystick", _touchpadJoystick);
+        //_virtualControllerManager.add("Virtual Joystick", _touchpadJoystick);
+        _virtualControllerManager.add("Gamepad", gamepadController);
         _virtualControllerManager.add("Extra Buttons", extraButtonsController);
     }
 
@@ -750,7 +756,18 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	@Override
 	public boolean dispatchTouchEvent(final MotionEvent ev) {
         if (!super.dispatchTouchEvent(ev)) {
-        	if (extraButtonsController.getIsActive() && extraButtonsController.onTouchEvent(ev)) return true;
+        	if (gamepadController.getIsActive() && gamepadController.onTouchEvent(ev)) {
+        		if (OverlayNew.requiresRedraw) {
+            		OverlayNew.requiresRedraw = false;
+        			gamepadView.invalidate();
+        		}
+        		sleep();
+        		return true;
+        	}
+        	if (extraButtonsController.getIsActive() && extraButtonsController.onTouchEvent(ev)) {
+        		sleep();
+        		return true;
+        	}
         	
 		    if(_touchpadJoystick.getIsActive()) {
 			    boolean ret = _touchpadJoystick.onTouchEvent(ev);
@@ -851,6 +868,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
     private ExtraButtonsController extraButtonsController = null;
+    private GamepadController gamepadController = null;
 
 
 	private SDLSurfaceView mGLView = null;
@@ -860,6 +878,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	private boolean sdlInited = false;
     private ButtonPanel _buttonPanel;
     private ExtraButtonsView extraButtonsView;
+    private GamepadView gamepadView;
     private Keymap _keymap = null;
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
