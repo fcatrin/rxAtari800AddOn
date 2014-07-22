@@ -12,7 +12,8 @@ import retrobox.vinput.QuitHandler.QuitHandlerCallback;
 import retrobox.vinput.VirtualEvent.MouseButton;
 import retrobox.vinput.VirtualEventDispatcher;
 import retrobox.vinput.overlay.ExtraButtons;
-import retrobox.vinput.overlay.Overlay;
+import retrobox.vinput.overlay.GamepadController;
+import retrobox.vinput.overlay.GamepadView;
 import retrobox.vinput.overlay.OverlayNew;
 import android.app.Activity;
 import android.content.Context;
@@ -233,7 +234,7 @@ public class MainActivity extends Activity {
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
 
         extraButtonsView = new ExtraButtonsView(this);
-        gamepadView = new GamepadView(this);
+        gamepadView = new GamepadView(this, overlay);
         
         if (landscapeMode) {
             _buttonPanel = new ButtonPanel(
@@ -320,16 +321,12 @@ public class MainActivity extends Activity {
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         
-
-
-
         ViewTreeObserver observer = mGLView.getViewTreeObserver();
 		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
 	        public void onGlobalLayout() {
 	        	int w = mGLView.getWidth();
 	        	int h = mGLView.getHeight();
-	        	Overlay.initJoystickOverlay(w, h);
 	        	String overlayConfig = getIntent().getStringExtra("OVERLAY");
 	        	if (overlayConfig!=null) overlay.init(overlayConfig, w, h);
 
@@ -487,7 +484,7 @@ public class MainActivity extends Activity {
         //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         //_nullController = new NullController(this);
         extraButtonsController = new ExtraButtonsController(this, extraButtonsView);
-        gamepadController = new GamepadController(this, gamepadView);
+        gamepadController = new GamepadControllerWrapper(this, new GamepadController(), gamepadView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
@@ -868,7 +865,7 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
     //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
     private ExtraButtonsController extraButtonsController = null;
-    private GamepadController gamepadController = null;
+    private GamepadControllerWrapper gamepadController = null;
 
 
 	private SDLSurfaceView mGLView = null;
