@@ -16,7 +16,8 @@ import retrobox.vinput.overlay.ExtraButtonsController;
 import retrobox.vinput.overlay.ExtraButtonsView;
 import retrobox.vinput.overlay.GamepadController;
 import retrobox.vinput.overlay.GamepadView;
-import retrobox.vinput.overlay.OverlayNew;
+import retrobox.vinput.overlay.Overlay;
+import retrobox.vinput.overlay.OverlayExtra;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -60,7 +61,7 @@ public class MainActivity extends Activity {
     private static MainActivity _instance = null;
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
-    public static final OverlayNew overlay = new OverlayNew();
+    public static final Overlay overlay = new Overlay();
     
     private static class ButtonInfo {
         String name;
@@ -756,13 +757,17 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
 	public boolean dispatchTouchEvent(final MotionEvent ev) {
         if (!super.dispatchTouchEvent(ev)) {
         	if (gamepadController.getIsActive() && gamepadController.onTouchEvent(ev)) {
-        		if (OverlayNew.requiresRedraw) {
-            		OverlayNew.requiresRedraw = false;
+        		if (Overlay.requiresRedraw) {
+            		Overlay.requiresRedraw = false;
         			gamepadView.invalidate();
         		}
         		return true;
         	}
         	if (extraButtonsController.getIsActive() && extraButtonsController.onTouchEvent(ev)) {
+        		if (OverlayExtra.requiresRedraw) {
+        			OverlayExtra.requiresRedraw = false;
+        			extraButtonsController.invalidate();
+        		}
         		return true;
         	}
         	

@@ -2,9 +2,7 @@ package xtvapps.retrobox.atari800;
 
 import retrobox.vinput.overlay.GamepadController;
 import retrobox.vinput.overlay.GamepadView;
-import retrobox.vinput.overlay.OverlayNew;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.tvi910.android.core.VirtualController;

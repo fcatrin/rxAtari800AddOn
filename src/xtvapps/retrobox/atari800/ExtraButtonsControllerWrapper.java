@@ -36,4 +36,8 @@ public class ExtraButtonsControllerWrapper extends VirtualController {
 	public boolean isSticky() {
 		return false;
 	}
+	
+	public void invalidate() {
+		view.invalidate();
+	}
 }
