@@ -229,6 +229,7 @@ public class MainActivity extends Activity {
                 
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
+        Mapper.initGestureDetector(this);
         
         SDLInterface.setLeftKeycode(SDLKeysym.SDLK_LEFT) ;
         SDLInterface.setRightKeycode(SDLKeysym.SDLK_RIGHT) ;
@@ -770,6 +771,8 @@ Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=
         		}
         		return true;
         	}
+        	
+        	mapper.onTouchEvent(ev);
         	
 		    if(_touchpadJoystick.getIsActive()) {
 			    boolean ret = _touchpadJoystick.onTouchEvent(ev);
