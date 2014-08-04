@@ -18,6 +18,7 @@ import retrobox.vinput.overlay.GamepadController;
 import retrobox.vinput.overlay.GamepadView;
 import retrobox.vinput.overlay.Overlay;
 import retrobox.vinput.overlay.OverlayExtra;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -154,17 +156,22 @@ public class MainActivity extends Activity {
 
         AtariKeys.init();
 		super.onCreate(savedInstanceState);
-		
         
         Intent intent = getIntent();
         String romFile = intent.getStringExtra("game");
         String stateDir = intent.getStringExtra("stateDir");
         String stateName = intent.getStringExtra("stateName");
-        String sGamepad = intent.getStringExtra("gamepad");
         String machine = intent.getStringExtra("machine");
         String osromDir = intent.getStringExtra("osromDir");
         String videoSystem = intent.getStringExtra("videoSystem");
-        boolean useGamepad = sGamepad!=null && !sGamepad.equals("NONE");
+        
+        for(int i=0; i<2; i++) {
+        	String prefix = "j" + (i+1);
+        	String deviceDescriptor = intent.getStringExtra(prefix + "DESCRIPTOR");
+        	Mapper.registerGamepad(i, deviceDescriptor);
+        }
+        
+        boolean useGamepad = Mapper.hasGamepads();
         
         if (stateDir!=null) new File(stateDir).mkdirs();
 		
@@ -216,6 +223,12 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
         KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
         KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
+        // second player
+        KeyTranslator.addTranslation("ATR_LEFT2", SDLKeysym.SDLK_KP1);
+        KeyTranslator.addTranslation("ATR_RIGHT2", SDLKeysym.SDLK_KP3);
+        KeyTranslator.addTranslation("ATR_UP2", SDLKeysym.SDLK_KP7);
+        KeyTranslator.addTranslation("ATR_DOWN2", SDLKeysym.SDLK_KP9);
+        KeyTranslator.addTranslation("ATR_TRIGGER2", SDLKeysym.SDLK_LCTRL);
         
         // haremos esto mejor en otra vida
         for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {
@@ -614,9 +627,9 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
-Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
+		Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 
-		if (mapper.handleKeyEvent(keyCode, true)) return true;
+		if (mapper.handleKeyEvent(event, keyCode, true)) return true;
 
          final int nativeCode = _keymap.translate(keyCode);
          
@@ -684,9 +697,9 @@ Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHa
 
 	@Override
 	public boolean onKeyUp(int keyCode, final KeyEvent event) {
-Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
+		Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 
-		if (mapper.handleKeyEvent(keyCode, false)) return true;
+		if (mapper.handleKeyEvent(event, keyCode, false)) return true;
 
          final int nativeCode = _keymap.translate(keyCode);
          

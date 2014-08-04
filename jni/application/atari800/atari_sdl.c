@@ -107,7 +107,7 @@ static atari_ntsc_t *the_ntscemu = NULL;
 
 /* a runtime switch for the kbd_joy_X_enabled vars is in the UI */
 int PLATFORM_kbd_joy_0_enabled = TRUE;	/* enabled by default, doesn't hurt */
-int PLATFORM_kbd_joy_1_enabled = FALSE;	/* disabled, would steal normal keys */
+int PLATFORM_kbd_joy_1_enabled = TRUE;	/* disabled, would steal normal keys */
 
 #ifdef ANDROID
 static int KBD_TRIG_0 = SDLK_KP_PERIOD;
@@ -123,10 +123,10 @@ static int KBD_STICK_0_DOWN = SDLK_KP5;
 static int KBD_STICK_0_UP = SDLK_KP8;
 #endif
 static int KBD_TRIG_1 = SDLK_LCTRL;
-static int KBD_STICK_1_LEFT = SDLK_a;
-static int KBD_STICK_1_RIGHT = SDLK_d;
-static int KBD_STICK_1_DOWN = SDLK_s;
-static int KBD_STICK_1_UP = SDLK_w;
+static int KBD_STICK_1_LEFT = SDLK_KP1;
+static int KBD_STICK_1_RIGHT = SDLK_KP3;
+static int KBD_STICK_1_DOWN = SDLK_KP9;
+static int KBD_STICK_1_UP = SDLK_KP7;
 
 /* real joysticks */
 
@@ -2582,6 +2582,7 @@ int PLATFORM_PORT(int num)
 	if (num == 0) {
 		UBYTE a, b;
 		get_platform_PORT(&a, &b);
+
 		return (b << 4) | (a & 0x0f);
 	}
 #endif

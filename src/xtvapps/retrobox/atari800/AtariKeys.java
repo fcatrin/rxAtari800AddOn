@@ -42,6 +42,13 @@ public class AtariKeys extends ConsoleKeys {
         _codeMap.put(SDLKeysym.SDLK_F14, "LOAD_STATE");
         _codeMap.put(SDLKeysym.SDLK_F15, "SAVE_STATE");
         
+        // second joystick
+        _codeMap.put(SDLKeysym.SDLK_KP7, "UP2");
+        _codeMap.put(SDLKeysym.SDLK_KP9, "DOWN2");
+        _codeMap.put(SDLKeysym.SDLK_KP1, "LEFT2");
+        _codeMap.put(SDLKeysym.SDLK_KP3, "RIGHT3");
+        _codeMap.put(SDLKeysym.SDLK_LCTRL, "TRIGGER2");
+        
         // enough for bounty bob
 //        _codeMap.put(SDLKeysym.SDLK_1, "1");
 //        _codeMap.put(SDLKeysym.SDLK_2, "2");
