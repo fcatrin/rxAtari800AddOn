@@ -196,7 +196,7 @@ public class MainActivity extends Activity {
         boolean landscapeMode =
             PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("landscape", true);
         if (landscapeMode) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
         else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
