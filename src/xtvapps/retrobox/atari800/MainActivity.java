@@ -38,6 +38,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -146,6 +147,32 @@ public class MainActivity extends Activity {
 	private static Mapper mapper;
 	private VirtualInputDispatcher vinputDispatcher;
     
+	
+	public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) new Handler().postDelayed(new Runnable(){
+			@Override
+			public void run() {
+				setImmersiveMode();
+			}
+		}, 5000);
+	}
+
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	private void setImmersiveMode() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			getWindow().getDecorView().setSystemUiVisibility(
+		            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+		            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+		            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+		            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+		            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+		            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		} else {
+			
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 				
@@ -164,6 +191,7 @@ public class MainActivity extends Activity {
         String machine = intent.getStringExtra("machine");
         String osromDir = intent.getStringExtra("osromDir");
         String videoSystem = intent.getStringExtra("videoSystem");
+        boolean keepAspect = intent.getBooleanExtra("keepAspect", true);
         
         for(int i=0; i<2; i++) {
         	String prefix = "j" + (i+1);
@@ -183,15 +211,19 @@ public class MainActivity extends Activity {
 	    editor.putString("stateName", stateName);
 	    editor.putString("machine", machine);
 	    editor.putString("videoSystem", videoSystem);
+	    editor.putBoolean("keepAspect", keepAspect);
 	    editor.commit();
 	    
 	    Log.d(TAG,  "Set machine:" + machine);
 	    
 		// fullscreen mode
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				   WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+		setImmersiveMode();
+		
         // lock orientation 
         boolean landscapeMode =
             PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("landscape", true);
@@ -381,7 +413,7 @@ public class MainActivity extends Activity {
         boolean enableSound = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("sound", true);
         boolean showBorder = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showBorder", true);
         String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "44100");
-        boolean stretchToFit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("stretchtofit", true);
+        boolean keepAspect = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("keepAspect", true);
         boolean ntscMode = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("videoSystem", "NTSC").equals("NTSC");
         String leftController = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("leftControllerId", "Gamepad");
         setupVirtualControllers(landscapeMode);
@@ -398,7 +430,7 @@ public class MainActivity extends Activity {
             arglist.add("" + refreshRateInt);
         }
 
-        if (!stretchToFit) arglist.add("-keepaspectratio");
+        if (keepAspect) arglist.add("-keepaspectratio");
         if (showBorder) arglist.add("-showborder");
 
         if (!enableSound) {
