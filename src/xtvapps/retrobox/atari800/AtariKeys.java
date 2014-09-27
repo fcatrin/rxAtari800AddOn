@@ -32,10 +32,10 @@ public class AtariKeys extends ConsoleKeys {
         _codeMap.put(SDLKeysym.SDLK_F5, "RESET");
         _codeMap.put(SDLKeysym.SDLK_F2, "OPTION");
         _codeMap.put(SDLKeysym.SDLK_F3, "SELECT");
-        _codeMap.put(SDLKeysym.SDLK_UP, "UP");
-        _codeMap.put(SDLKeysym.SDLK_DOWN, "DOWN");
-        _codeMap.put(SDLKeysym.SDLK_LEFT, "LEFT");
-        _codeMap.put(SDLKeysym.SDLK_RIGHT, "RIGHT");
+        _codeMap.put(SDLKeysym.SDLK_KP8, "UP");
+        _codeMap.put(SDLKeysym.SDLK_KP5, "DOWN");
+        _codeMap.put(SDLKeysym.SDLK_KP4, "LEFT");
+        _codeMap.put(SDLKeysym.SDLK_KP6, "RIGHT");
         _codeMap.put(SDLKeysym.SDLK_KP_PERIOD, "TRIGGER");
         _codeMap.put(SDLKeysym.SDLK_ESCAPE, "ESCAPE");
         _codeMap.put(SDLKeysym.SDLK_F1, "F1");

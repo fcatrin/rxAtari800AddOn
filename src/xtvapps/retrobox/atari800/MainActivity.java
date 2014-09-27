@@ -244,10 +244,15 @@ public class MainActivity extends Activity {
         }
         
         KeyTranslator.init();
-        KeyTranslator.addTranslation("ATR_LEFT", SDLKeysym.SDLK_LEFT);
-        KeyTranslator.addTranslation("ATR_RIGHT", SDLKeysym.SDLK_RIGHT);
-        KeyTranslator.addTranslation("ATR_UP", SDLKeysym.SDLK_UP);
-        KeyTranslator.addTranslation("ATR_DOWN", SDLKeysym.SDLK_DOWN);
+        KeyTranslator.addTranslation("ATR_KEY_LEFT", SDLKeysym.SDLK_LEFT);
+        KeyTranslator.addTranslation("ATR_KEY_RIGHT", SDLKeysym.SDLK_RIGHT);
+        KeyTranslator.addTranslation("ATR_KEY_UP", SDLKeysym.SDLK_UP);
+        KeyTranslator.addTranslation("ATR_KEY_DOWN", SDLKeysym.SDLK_DOWN);
+
+        KeyTranslator.addTranslation("ATR_LEFT", SDLKeysym.SDLK_KP4);
+        KeyTranslator.addTranslation("ATR_RIGHT", SDLKeysym.SDLK_KP6);
+        KeyTranslator.addTranslation("ATR_UP", SDLKeysym.SDLK_KP8);
+        KeyTranslator.addTranslation("ATR_DOWN", SDLKeysym.SDLK_KP5);
         KeyTranslator.addTranslation("ATR_RESET", SDLKeysym.SDLK_F5);
         KeyTranslator.addTranslation("ATR_OPTION", SDLKeysym.SDLK_F2);
         KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
@@ -276,10 +281,10 @@ public class MainActivity extends Activity {
         mapper = new Mapper(getIntent(), vinputDispatcher);
         Mapper.initGestureDetector(this);
         
-        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_LEFT) ;
-        SDLInterface.setRightKeycode(SDLKeysym.SDLK_RIGHT) ;
-        SDLInterface.setUpKeycode(SDLKeysym.SDLK_UP);
-        SDLInterface.setDownKeycode(SDLKeysym.SDLK_DOWN) ;
+        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_KP4) ;
+        SDLInterface.setRightKeycode(SDLKeysym.SDLK_KP6) ;
+        SDLInterface.setUpKeycode(SDLKeysym.SDLK_KP8);
+        SDLInterface.setDownKeycode(SDLKeysym.SDLK_KP2) ;
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
 
         extraButtonsView = new ExtraButtonsView(this);
