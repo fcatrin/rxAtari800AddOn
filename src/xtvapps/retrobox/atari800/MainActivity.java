@@ -4,6 +4,7 @@ package xtvapps.retrobox.atari800;
 import java.io.File;
 import java.util.ArrayList;
 
+import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
@@ -382,7 +383,8 @@ public class MainActivity extends Activity {
 	        	int w = mGLView.getWidth();
 	        	int h = mGLView.getHeight();
 	        	String overlayConfig = getIntent().getStringExtra("OVERLAY");
-	        	if (overlayConfig!=null) overlay.init(overlayConfig, w, h);
+				float alpha = getIntent().getFloatExtra("OVERLAY_ALPHA", 0.8f);
+	        	if (overlayConfig!=null) overlay.init(overlayConfig, w, h, alpha);
 
 	            ExtraButtons.initExtraButtons(MainActivity.this, getIntent().getStringExtra("buttons"), mGLView.getWidth(), mGLView.getHeight(), true);
 	        }
@@ -1046,6 +1048,9 @@ public class MainActivity extends Activity {
 		public void sendMouseButton(MouseButton button, boolean down) {}
 
 		@Override
+		public void sendAnalog(Analog index, double x, double y) {}
+
+		@Override
 		public boolean handleShortcut(ShortCut shortcut, boolean down) {
 			switch(shortcut) {
 			case EXIT: if (!down) uiQuitConfirm(); return true;
@@ -1056,6 +1061,7 @@ public class MainActivity extends Activity {
 				return false;
 			}
 		}
+
     }
     
 }
