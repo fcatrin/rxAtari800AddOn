@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="xtvapps.retrobox.atari800"
     android:installLocation="auto"
-    android:versionCode="13010"
-    android:versionName="1.3-10"
+    android:versionCode="13011"
+    android:versionName="1.3-11"
     android:sharedUserId="psychoworld.retrobox">
     
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
