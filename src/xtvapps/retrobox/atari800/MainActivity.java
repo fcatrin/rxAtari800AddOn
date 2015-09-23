@@ -769,7 +769,7 @@ public class MainActivity extends Activity {
                 }
             }*/
 
-            uiQuitConfirm();
+            openOptionsMenu();
             return true;
          }
          else if (keyCode == 67) {
@@ -948,7 +948,7 @@ public class MainActivity extends Activity {
     
 	@Override
 	public void onBackPressed() {
-		uiQuit();
+		openOptionsMenu();
 	}
 	
 	static final private int CANCEL_ID = Menu.FIRST;
