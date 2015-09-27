@@ -436,7 +436,7 @@
 #define STDC_HEADERS 1
 
 /* Define to allow stereo sound. */
-/* #define STEREO_SOUND 1 */
+#define STEREO_SOUND 1
 
 /* Can change video modes on the fly. */
 #define SUPPORTS_CHANGE_VIDEOMODE 1

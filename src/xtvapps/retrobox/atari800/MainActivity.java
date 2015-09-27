@@ -193,6 +193,7 @@ public class MainActivity extends Activity {
         String osromDir = intent.getStringExtra("osromDir");
         String videoSystem = intent.getStringExtra("videoSystem");
         boolean keepAspect = intent.getBooleanExtra("keepAspect", true);
+        boolean stereo = intent.getBooleanExtra("stereo", false);
         
         for(int i=0; i<2; i++) {
         	String prefix = "j" + (i+1);
@@ -213,6 +214,7 @@ public class MainActivity extends Activity {
 	    editor.putString("machine", machine);
 	    editor.putString("videoSystem", videoSystem);
 	    editor.putBoolean("keepAspect", keepAspect);
+	    editor.putBoolean("stereo", stereo);
 	    editor.commit();
 	    
 	    Log.d(TAG,  "Set machine:" + machine);
@@ -421,6 +423,7 @@ public class MainActivity extends Activity {
         boolean showBorder = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showBorder", true);
         String sampleRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("sampleRate", "44100");
         boolean keepAspect = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("keepAspect", true);
+        boolean stereo = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("stereo", false);
         boolean ntscMode = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("videoSystem", "NTSC").equals("NTSC");
         String leftController = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("leftControllerId", "Gamepad");
         setupVirtualControllers(landscapeMode);
@@ -443,6 +446,11 @@ public class MainActivity extends Activity {
         if (!enableSound) {
             arglist.add("-nosound");
         }
+        
+        if (stereo) {
+        	arglist.add("-stereo");
+        }
+        
         arglist.add("-dsprate");
         arglist.add(sampleRate);
         arglist.add("-audio16");
