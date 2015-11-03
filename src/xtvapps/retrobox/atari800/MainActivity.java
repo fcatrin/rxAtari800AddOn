@@ -4,6 +4,7 @@ package xtvapps.retrobox.atari800;
 import java.io.File;
 import java.util.ArrayList;
 
+import retrobox.utils.ImmersiveModeSetter;
 import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
@@ -149,29 +150,20 @@ public class MainActivity extends Activity {
 	private VirtualInputDispatcher vinputDispatcher;
     
 	
+	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) new Handler().postDelayed(new Runnable(){
-			@Override
-			public void run() {
-				setImmersiveMode();
-			}
-		}, 5000);
+        Log.d("FOCUS", "onFocusChanged " + hasFocus);
+        
+        if (hasFocus) ImmersiveModeSetter.postImmersiveMode(new Handler(), getWindow(), useStableLayout());
 	}
 
-	@TargetApi(Build.VERSION_CODES.KITKAT)
 	private void setImmersiveMode() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			getWindow().getDecorView().setSystemUiVisibility(
-		            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-		            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-		            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-		            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-		            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-		            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-		} else {
-			
-		}
+		ImmersiveModeSetter.get().setImmersiveMode(getWindow(), useStableLayout());
+	}
+	
+	private boolean useStableLayout() {
+		return false;
 	}
 	
 	@Override
@@ -645,7 +637,11 @@ public class MainActivity extends Activity {
 		if( wakeLock != null ) {
 			wakeLock.acquire();
         }*/
-		super.onResume();
+		
+        super.onResume();
+		
+        ImmersiveModeSetter.postImmersiveMode(new Handler(), getWindow(), useStableLayout());
+        
 		if( mGLView != null ) {
 			mGLView.onResume();
         }
