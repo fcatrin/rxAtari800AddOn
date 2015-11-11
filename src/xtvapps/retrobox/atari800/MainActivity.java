@@ -3,8 +3,13 @@ package xtvapps.retrobox.atari800;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrobox.utils.ImmersiveModeSetter;
+import retrobox.utils.ListOption;
+import retrobox.utils.R;
+import retrobox.utils.RetroBoxDialog;
+import retrobox.utils.RetroBoxUtils;
 import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
@@ -20,6 +25,9 @@ import retrobox.vinput.overlay.GamepadController;
 import retrobox.vinput.overlay.GamepadView;
 import retrobox.vinput.overlay.Overlay;
 import retrobox.vinput.overlay.OverlayExtra;
+import xtvapps.core.AndroidFonts;
+import xtvapps.core.Callback;
+import xtvapps.core.content.KeyValue;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -517,6 +525,8 @@ public class MainActivity extends Activity {
         //_keyboardOverlay.getButtonPanel().addToLayout((ViewGroup)al);
         extraButtonsView.addToLayout((ViewGroup)al);
         
+        getLayoutInflater().inflate(R.layout.modal_dialog_list, al);
+        AndroidFonts.setViewFont(findViewById(R.id.txtDialogListTitle), RetroBoxUtils.FONT_DEFAULT_M);
 //        _buttonPanel.showPanel();
 
 		// Receive keyboard events
@@ -670,8 +680,12 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
-		Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 
+		if (RetroBoxDialog.isDialogVisible(this)) {
+			return RetroBoxDialog.onKeyDown(this, keyCode, event);
+		}
+		Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
+		
 		if (mapper.handleKeyEvent(event, keyCode, true)) return true;
 
          final int nativeCode = _keymap.translate(keyCode);
@@ -689,9 +703,6 @@ public class MainActivity extends Activity {
         	 Log.v("com.droid800.MainActivity", "Send native code " + nativeCode);
              SDLInterface.nativeKey(nativeCode, 1);
              return true;
-         }
-         else if (keyCode == 4 /*|| keyCode == 84*/) {
-            return true;
          }
          else if (keyCode == 67) {
              SDLInterface.nativeKey(8, 1);
@@ -740,9 +751,18 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, final KeyEvent event) {
+		if (RetroBoxDialog.isDialogVisible(this)) {
+			return RetroBoxDialog.onKeyUp(this, keyCode, event);
+		}
+		
 		Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 
 		if (mapper.handleKeyEvent(event, keyCode, false)) return true;
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			onBackPressed();
+			return true;
+		}
 
          final int nativeCode = _keymap.translate(keyCode);
          
@@ -758,23 +778,6 @@ public class MainActivity extends Activity {
          if (nativeCode > 0) {
              SDLInterface.nativeKey(nativeCode, 0);
              return true;
-         }
-         else if (keyCode == 4) 
-           {
-        	 /*
-            if (_keyboardOverlay.getButtonPanel().isVisible()) {
-                hideKeyboard();
-                return true;
-            }
-            else {
-                if (_buttonPanel.isVisible()) {
-                    hideControlPanel();
-                    return true;
-                }
-            }*/
-
-            openOptionsMenu();
-            return true;
          }
          else if (keyCode == 67) {
              SDLInterface.nativeKey(8, 0);
@@ -952,54 +955,54 @@ public class MainActivity extends Activity {
     
 	@Override
 	public void onBackPressed() {
-		openOptionsMenu();
+		Log.d("MENU", "on Back pressed");
+		if (RetroBoxDialog.cancelDialog(this)) return;
+		
+		Log.d("MENU", "openRetroBoxMenu");
+		openRetroBoxMenu();
 	}
 	
-	static final private int CANCEL_ID = Menu.FIRST;
-    static final private int LOAD_ID = Menu.FIRST +1;
-    static final private int SAVE_ID = Menu.FIRST +2;
-    static final private int QUIT_ID = Menu.FIRST +3;
-    static final private int BUTTONS_ID = Menu.FIRST +4;
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        menu.add(0, CANCEL_ID, 0, "Cancel");
-        menu.add(0, LOAD_ID, 0, R.string.load_state);
-        menu.add(0, SAVE_ID, 0, R.string.save_state);
-        menu.add(0, BUTTONS_ID, 0, "Show Buttons");
-        menu.add(0, QUIT_ID, 0, R.string.quit);
-        
-        return true;
-    }
-    
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	if (item != null) {
-	        switch (item.getItemId()) {
-	        case LOAD_ID : uiLoadState(); return true;
-	        case SAVE_ID : uiSaveState(); return true;
-	        case QUIT_ID : uiQuit(); return true;
-	        case CANCEL_ID : return true;
-	        case BUTTONS_ID : uiToggleButtons(); return true;
-	        }
-    	}
-        return super.onMenuItemSelected(featureId, item);
-    }
-    
-    @Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
+	private void openRetroBoxMenu() {
 		onPause();
-		return super.onMenuOpened(featureId, menu);
+		
+		List<ListOption> options = new ArrayList<ListOption>();
+		
+        options.add(new ListOption("", "Cancel"));
+        options.add(new ListOption("load", "Load State"));
+        options.add(new ListOption("save", "Save State"));
+        
+        if (OverlayExtra.hasExtraButtons()) {
+            options.add(new ListOption("extra", "Extra Buttons"));
+        }
+        	
+        options.add(new ListOption("quit", "Quit"));
+        
+        RetroBoxDialog.showListDialog(this, "RetroBoxTV", options, new Callback<KeyValue>() {
+			
+			@Override
+			public void onResult(KeyValue result) {
+				String key = result.getKey();
+				if (key.equals("quit")) {
+					uiQuit();
+				} else if (key.equals("load")) {
+					uiLoadState();
+				} else if (key.equals("save")) {
+					uiSaveState();
+				} else if (key.equals("extra")) {
+					uiToggleButtons();
+				} 
+				onResume();
+			}
+
+			@Override
+			public void onError() {
+				super.onError();
+				onResume();
+			}
+		});
 	}
 
-	@Override
-	public void onOptionsMenuClosed(Menu menu) {
-		onResume();
-		super.onOptionsMenuClosed(menu);
-	}
-	
+
 	protected void uiToggleButtons() {
 		buttonsVisible = !buttonsVisible ;
 		if (buttonsVisible) showExtrabuttons();
@@ -1060,7 +1063,7 @@ public class MainActivity extends Activity {
 			case EXIT: if (!down) uiQuitConfirm(); return true;
 			case LOAD_STATE: if (!down) uiLoadState(); return true;
 			case SAVE_STATE: if (!down) uiSaveState(); return true;
-			case MENU : if (!down) openOptionsMenu(); return true;
+			case MENU : if (!down) openRetroBoxMenu(); return true;
 			default:
 				return false;
 			}
