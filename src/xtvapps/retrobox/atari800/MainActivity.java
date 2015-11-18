@@ -75,6 +75,7 @@ public class MainActivity extends Activity {
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
     public static final Overlay overlay = new Overlay();
+    private static int saveSlot = 0;
     
     private static class ButtonInfo {
         String name;
@@ -1010,6 +1011,7 @@ public class MainActivity extends Activity {
 	}
     
     protected void uiLoadState() {
+    	SDLInterface.setSaveSlot(saveSlot);
     	sendLoadState(true);
     	new Handler().postDelayed(new Runnable(){
 			@Override
@@ -1021,6 +1023,7 @@ public class MainActivity extends Activity {
     }
 
     protected void uiSaveState() {
+    	SDLInterface.setSaveSlot(saveSlot);
     	sendSaveState(true);
     	new Handler().postDelayed(new Runnable(){
 			@Override

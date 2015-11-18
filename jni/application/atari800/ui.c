@@ -27,6 +27,8 @@
 #include <string.h>
 #include <stdlib.h> /* free() */
 
+#include <jni.h>
+
 #include "afile.h"
 #include "antic.h"
 #include "atari.h"
@@ -1191,10 +1193,18 @@ static void AtariSettings(void)
 	}
 }
 
+static int retrobox_save_slot = 0;
+
+JNIEXPORT void JNICALL Java_com_tvi910_android_sdl_SDLInterface_setSaveSlot ( JNIEnv*  env, jobject thiz, jint slot)
+{
+    retrobox_save_slot = slot;
+};
+
+
 static void SaveState(void)
 {
 	char save_state_file[FILENAME_MAX];
-	sprintf(save_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
+	sprintf(save_state_file, "%s/%s-%i.state", CFG_state_dir, CFG_state_name, retrobox_save_slot);
 
 	int result;
 	//UI_driver->fMessage("Please wait while saving...", 0);
@@ -1207,7 +1217,7 @@ static void LoadState(void)
 {
 	char load_state_file[FILENAME_MAX];
 
-	sprintf(load_state_file, "%s/%s.state", CFG_state_dir, CFG_state_name);
+	sprintf(load_state_file, "%s/%s-%i.state", CFG_state_dir, CFG_state_name, retrobox_save_slot);
 	//UI_driver->fMessage("Please wait while loading...", 0);
 	if (!StateSav_ReadAtariState(load_state_file, "rb"))
 		CantLoad(CFG_state_name);
