@@ -7,7 +7,7 @@ import java.util.List;
 
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
-import retrobox.utils.R;
+import xtvapps.retrobox.v2.atari800.R;
 import retrobox.utils.RetroBoxDialog;
 import retrobox.utils.RetroBoxUtils;
 import retrobox.vinput.GenericGamepad.Analog;
