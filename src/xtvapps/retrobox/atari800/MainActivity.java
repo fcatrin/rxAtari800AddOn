@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
 import xtvapps.retrobox.v2.atari800.R;
@@ -27,6 +28,7 @@ import retrobox.vinput.overlay.Overlay;
 import retrobox.vinput.overlay.OverlayExtra;
 import xtvapps.core.AndroidFonts;
 import xtvapps.core.Callback;
+import xtvapps.core.SimpleCallback;
 import xtvapps.core.content.KeyValue;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -76,6 +78,7 @@ public class MainActivity extends Activity {
     public static final String TAG = "com.droid800.emulator";
     public static final Overlay overlay = new Overlay();
     private static int saveSlot = 0;
+	private GamepadInfoDialog gamepadInfoDialog;
     
     private static class ButtonInfo {
         String name;
@@ -528,6 +531,15 @@ public class MainActivity extends Activity {
         
         getLayoutInflater().inflate(R.layout.modal_dialog_list, al);
         AndroidFonts.setViewFont(findViewById(R.id.txtDialogListTitle), RetroBoxUtils.FONT_DEFAULT_M);
+        
+        getLayoutInflater().inflate(R.layout.modal_dialog_gamepad, al);
+        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoTop), RetroBoxUtils.FONT_DEFAULT_M);
+        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoBottom), RetroBoxUtils.FONT_DEFAULT_M);
+
+        gamepadInfoDialog = new GamepadInfoDialog(this);
+        gamepadInfoDialog.setLabels(gamepadInfoDialog.getLabelsFromIntent(getIntent()));
+
+
 //        _buttonPanel.showPanel();
 
 		// Receive keyboard events
@@ -976,6 +988,7 @@ public class MainActivity extends Activity {
             options.add(new ListOption("extra", "Extra Buttons"));
         }
         	
+        options.add(new ListOption("help", "Help"));
         options.add(new ListOption("quit", "Quit"));
         
         RetroBoxDialog.showListDialog(this, "RetroBoxTV", options, new Callback<KeyValue>() {
@@ -991,7 +1004,10 @@ public class MainActivity extends Activity {
 					uiSaveState();
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
-				} 
+				} else if (key.equals("help")) {
+					uiHelp();
+					return;
+				}
 				onResume();
 			}
 
@@ -1032,6 +1048,15 @@ public class MainActivity extends Activity {
 				toastMessage("State was saved");
 			}
 		}, 50);
+    }
+    
+    protected void uiHelp() {
+		RetroBoxDialog.showGamepadDialogIngame(this, gamepadInfoDialog, "","", new SimpleCallback() {
+			@Override
+			public void onResult() {
+				onResume();
+			}
+		});
     }
 
     protected void uiQuitConfirm() {
