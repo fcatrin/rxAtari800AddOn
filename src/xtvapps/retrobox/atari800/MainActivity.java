@@ -532,14 +532,6 @@ public class MainActivity extends Activity {
         getLayoutInflater().inflate(R.layout.modal_dialog_list, al);
         AndroidFonts.setViewFont(findViewById(R.id.txtDialogListTitle), RetroBoxUtils.FONT_DEFAULT_M);
         
-        getLayoutInflater().inflate(R.layout.modal_dialog_gamepad, al);
-        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoTop), RetroBoxUtils.FONT_DEFAULT_M);
-        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoBottom), RetroBoxUtils.FONT_DEFAULT_M);
-
-        gamepadInfoDialog = new GamepadInfoDialog(this);
-        gamepadInfoDialog.setLabels(gamepadInfoDialog.getLabelsFromIntent(getIntent()));
-
-
 //        _buttonPanel.showPanel();
 
 		// Receive keyboard events
@@ -552,6 +544,14 @@ public class MainActivity extends Activity {
 		if (!useGamepad)  {
 			_virtualControllerManager.setActiveController("Gamepad");
 		}
+		
+        getLayoutInflater().inflate(R.layout.modal_dialog_gamepad, al);
+        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoTop), RetroBoxUtils.FONT_DEFAULT_M);
+        AndroidFonts.setViewFont(findViewById(R.id.txtGamepadInfoBottom), RetroBoxUtils.FONT_DEFAULT_M);
+
+        gamepadInfoDialog = new GamepadInfoDialog(this);
+        gamepadInfoDialog.loadFromIntent(getIntent());
+
 	}
 
     private void setupVirtualControllers(boolean landscapeMode) {
@@ -1051,7 +1051,7 @@ public class MainActivity extends Activity {
     }
     
     protected void uiHelp() {
-		RetroBoxDialog.showGamepadDialogIngame(this, gamepadInfoDialog, "","", new SimpleCallback() {
+		RetroBoxDialog.showGamepadDialogIngame(this, gamepadInfoDialog, new SimpleCallback() {
 			@Override
 			public void onResult() {
 				onResume();
