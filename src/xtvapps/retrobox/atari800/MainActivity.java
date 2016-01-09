@@ -1031,6 +1031,7 @@ public class MainActivity extends Activity {
 				String key = result.getKey();
 				if (key.equals("quit")) {
 					uiQuit();
+					return;
 				} else if (key.equals("load")) {
 					uiLoadState();
 				} else if (key.equals("save")) {
