@@ -12,7 +12,10 @@ import xtvapps.retrobox.v2.atari800.R;
 import retrobox.utils.RetroBoxDialog;
 import retrobox.utils.RetroBoxUtils;
 import retrobox.vinput.GenericGamepad;
+import retrobox.vinput.AnalogGamepad.Axis;
 import retrobox.vinput.GenericGamepad.Analog;
+import retrobox.vinput.AnalogGamepad;
+import retrobox.vinput.AnalogGamepadListener;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
@@ -80,6 +83,8 @@ public class MainActivity extends Activity {
     public static final Overlay overlay = new Overlay();
     private static int saveSlot = 0;
 	private GamepadInfoDialog gamepadInfoDialog;
+    AnalogGamepad analogGamepad;
+
     
     private static class ButtonInfo {
         String name;
@@ -297,6 +302,33 @@ public class MainActivity extends Activity {
 
         extraButtonsView = new ExtraButtonsView(this);
         gamepadView = new GamepadView(this, overlay);
+        
+    	analogGamepad = new AnalogGamepad(0, 0, new AnalogGamepadListener() {
+			
+			@Override
+			public void onMouseMoveRelative(float mousex, float mousey) {}
+			
+			@Override
+			public void onMouseMove(int mousex, int mousey) {}
+			
+			@Override
+			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty) {
+				vinputDispatcher.sendAnalog(gamepad, Analog.LEFT, axisx, -axisy, hatx, haty);
+			}
+
+			@Override
+			public void onDigitalX(Axis axis, boolean on) {}
+
+			@Override
+			public void onDigitalY(Axis axis, boolean on) {}
+			
+			@Override
+			public void onTriggers(String deviceDescriptor, int deviceId, boolean left, boolean right) {
+				mapper.handleTriggerEvent(deviceDescriptor, deviceId, left, right); 
+			}
+
+		});
+
         
         if (landscapeMode) {
             _buttonPanel = new ButtonPanel(
@@ -1072,11 +1104,24 @@ public class MainActivity extends Activity {
     protected void uiQuit() {
     	shutdown();
     }
+    
+    @Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+    	if (RetroBoxDialog.isDialogVisible(this)) {
+    		return super.onGenericMotionEvent(event);
+    	}
+    	
+		if (analogGamepad != null && analogGamepad.onGenericMotionEvent(event)) return true;
+		return super.onGenericMotionEvent(event);
+	}
+
 
     class VirtualInputDispatcher implements VirtualEventDispatcher {
+    	private float THRESHOLD = 0.2f;
 
 		@Override
 		public void sendKey(GenericGamepad gamepad, int keyCode, boolean down) {
+			Log.d("KEY", "sendKey " + keyCode + " down:" + down);
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
 
@@ -1084,7 +1129,18 @@ public class MainActivity extends Activity {
 		public void sendMouseButton(MouseButton button, boolean down) {}
 
 		@Override
-		public void sendAnalog(GenericGamepad gamepad, Analog index, double x, double y, double hatx, double haty) {}
+		public void sendAnalog(GenericGamepad gamepad, Analog index, double x, double y, double hatx, double haty) {
+			double dx = hatx!=0?hatx:x;
+			double dy = haty!=0?haty:y;
+			
+			boolean dpadLeft = dx < -THRESHOLD;
+			boolean dpadRight = dx > THRESHOLD;
+			boolean dpadUp = dy < -THRESHOLD;
+			boolean dpadDown = dy >THRESHOLD;
+			
+			gamepad.setDpad(dpadLeft, dpadRight, dpadUp, dpadDown);
+			
+		}
 
 		@Override
 		public boolean handleShortcut(ShortCut shortcut, boolean down) {
