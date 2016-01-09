@@ -11,6 +11,7 @@ import retrobox.utils.ListOption;
 import xtvapps.retrobox.v2.atari800.R;
 import retrobox.utils.RetroBoxDialog;
 import retrobox.utils.RetroBoxUtils;
+import retrobox.vinput.GenericGamepad;
 import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
@@ -1075,7 +1076,7 @@ public class MainActivity extends Activity {
     class VirtualInputDispatcher implements VirtualEventDispatcher {
 
 		@Override
-		public void sendKey(int keyCode, boolean down) {
+		public void sendKey(GenericGamepad gamepad, int keyCode, boolean down) {
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
 
@@ -1083,7 +1084,7 @@ public class MainActivity extends Activity {
 		public void sendMouseButton(MouseButton button, boolean down) {}
 
 		@Override
-		public void sendAnalog(Analog index, double x, double y) {}
+		public void sendAnalog(GenericGamepad gamepad, Analog index, double x, double y, double hatx, double haty) {}
 
 		@Override
 		public boolean handleShortcut(ShortCut shortcut, boolean down) {
