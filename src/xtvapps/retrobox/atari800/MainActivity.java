@@ -293,6 +293,7 @@ public class MainActivity extends Activity {
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
         Mapper.initGestureDetector(this);
+        Mapper.joinPorts = getIntent().getBooleanExtra("joinPorts", false);
         
         SDLInterface.setLeftKeycode(SDLKeysym.SDLK_KP4) ;
         SDLInterface.setRightKeycode(SDLKeysym.SDLK_KP6) ;
