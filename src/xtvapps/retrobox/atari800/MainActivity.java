@@ -316,16 +316,18 @@ public class MainActivity extends Activity {
 			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty) {
 				vinputDispatcher.sendAnalog(gamepad, Analog.LEFT, axisx, axisy, hatx, haty);
 			}
-
-			@Override
-			public void onDigitalX(Axis axis, boolean on) {}
-
-			@Override
-			public void onDigitalY(Axis axis, boolean on) {}
 			
 			@Override
 			public void onTriggers(String deviceDescriptor, int deviceId, boolean left, boolean right) {
 				mapper.handleTriggerEvent(deviceDescriptor, deviceId, left, right); 
+			}
+
+			@Override
+			public void onDigitalX(GenericGamepad gamepad, Axis axis, boolean on) {
+			}
+
+			@Override
+			public void onDigitalY(GenericGamepad gamepad, Axis axis, boolean on) {
 			}
 
 		});
