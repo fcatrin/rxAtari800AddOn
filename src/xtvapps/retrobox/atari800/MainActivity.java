@@ -505,6 +505,11 @@ public class MainActivity extends Activity {
             arglist.add("-5200");
             arglist.add("-5200_rom");
             arglist.add(osROM);
+            
+            boolean a5200CartridgeOneChip = getIntent().getBooleanExtra("5200OneChip", false);
+            if (a5200CartridgeOneChip) {
+            	arglist.add("-5200_one_chip");
+            }
         }
         else if (systemType.equals("800a")) {
         	String osROM = osromDir + "/ATARIOSA.ROM";
