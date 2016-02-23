@@ -467,6 +467,9 @@ int Atari800_Initialise(int *argc, char *argv[])
 			Atari800_machine_type = Atari800_MACHINE_5200;
 			MEMORY_ram_size = 16;
 		}
+		else if (strcmp(argv[i], "-5200_one_chip") == 0) {
+			CARTRIDGE_5200_16_type = CARTRIDGE_5200_16_ONE_CHIP;
+		}
 		else if (strcmp(argv[i], "-nobasic") == 0)
 			Atari800_disable_basic = TRUE;
 		else if (strcmp(argv[i], "-basic") == 0)

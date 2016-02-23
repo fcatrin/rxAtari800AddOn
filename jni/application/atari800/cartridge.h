@@ -50,10 +50,15 @@
 #define CARTRIDGE_SDX_128        43
 #define CARTRIDGE_LAST_SUPPORTED 43
 
+#define CARTRIDGE_5200_16_ONE_CHIP 1
+#define CARTRIDGE_5200_16_TWO_CHIP 2
+
+
 #define CARTRIDGE_MAX_SIZE	(1024 * 1024)
 extern int CARTRIDGE_kb[CARTRIDGE_LAST_SUPPORTED + 1];
 extern int CARTRIDGE_type;
 extern int CARTRIDGE_second_type;
+extern int CARTRIDGE_5200_16_type;
 
 int CARTRIDGE_IsFor5200(int type);
 int CARTRIDGE_Checksum(const UBYTE *image, int nbytes);

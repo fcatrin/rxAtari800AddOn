@@ -117,6 +117,8 @@ int CARTRIDGE_type = CARTRIDGE_NONE;
 int CARTRIDGE_second_type = CARTRIDGE_NONE;
 static int cart_pass_through = FALSE;
 
+int CARTRIDGE_5200_16_type = CARTRIDGE_5200_16_TWO_CHIP;
+
 static int bank;
 static void CARTRIDGE_Start_Local(int curr_cart_type);
 
@@ -569,8 +571,10 @@ int CARTRIDGE_Insert(const char *filename)
 
 	/* open file */
 	fp = fopen(filename, "rb");
-	if (fp == NULL)
+	if (fp == NULL) {
+		Log_print("Cannot open cartidge %s\n", filename);
 		return CARTRIDGE_CANT_OPEN;
+	}
 	/* check file length */
 	len = Util_flen(fp);
 	Util_rewind(fp);
@@ -580,6 +584,7 @@ int CARTRIDGE_Insert(const char *filename)
 
 	/* if full kilobytes, assume it is raw image */
 	if ((len & 0x3ff) == 0) {
+		Log_print("Cartidge is full kb %d\n", len);
 		/* alloc memory and read data */
 		cart_image = (UBYTE *) Util_malloc(len);
 		if (fread(cart_image, 1, len, fp) < len) {
@@ -591,10 +596,27 @@ int CARTRIDGE_Insert(const char *filename)
 		len >>= 10;	/* number of kilobytes */
 		for (type = 1; type <= CARTRIDGE_LAST_SUPPORTED; type++)
 			if (CARTRIDGE_kb[type] == len) {
-				if (CARTRIDGE_type == CARTRIDGE_NONE)
-					CARTRIDGE_type = type;
-				else
+				if (CARTRIDGE_type == CARTRIDGE_NONE) {
+					if (Atari800_machine_type == Atari800_MACHINE_5200) {
+						if (CARTRIDGE_IsFor5200(type)) {
+							CARTRIDGE_type = type;
+							Log_print("Cartridge type %d\n", type);
+							Log_print("Atari 5200 cartridge detected of size %dkb type %d\n", len, CARTRIDGE_type);
+							if (len == 16) {
+								if (CARTRIDGE_5200_16_type == CARTRIDGE_5200_16_ONE_CHIP) {
+									CARTRIDGE_type = CARTRIDGE_5200_NS_16;
+								}
+								Log_print("Atari 5200 cartridge 16kb of type %s\n", CARTRIDGE_type == CARTRIDGE_5200_NS_16 ?"One Chip":"Two Chip");
+							}
+							break;
+						}
+					} else {
+						CARTRIDGE_type = type;
+					}
+				} else {
+					Log_print("More than one cartridge of size %d\n", len);
 					return len;	/* more than one cartridge type of such length - user must select */
+				}
 			}
 		if (CARTRIDGE_type != CARTRIDGE_NONE) {
 			CARTRIDGE_Start();
@@ -602,6 +624,7 @@ int CARTRIDGE_Insert(const char *filename)
 		}
 		free(cart_image);
 		cart_image = NULL;
+		Log_print("Bad cartridge format\n");
 		return CARTRIDGE_BAD_FORMAT;
 	}
 	/* if not full kilobytes, assume it is CART file */

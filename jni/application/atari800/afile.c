@@ -166,6 +166,7 @@ int AFILE_DetectFileType(const char *filename)
 int AFILE_OpenFile(const char *filename, int reboot, int diskno, int readonly)
 {
 	int type = AFILE_DetectFileType(filename);
+	Log_print("Detected file type %d\n", type);
 	switch (type) {
 	case AFILE_ATR:
 	case AFILE_ATX:
@@ -188,6 +189,7 @@ int AFILE_OpenFile(const char *filename, int reboot, int diskno, int readonly)
 	case AFILE_CART:
 	case AFILE_ROM:
 		/* TODO: select format for ROMs; switch 5200 ? */
+		Log_print("Try to insert ROM");
 		if (CARTRIDGE_Insert(filename) != 0)
 			return AFILE_ERROR;
 		if (reboot)
