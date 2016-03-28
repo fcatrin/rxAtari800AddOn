@@ -8,14 +8,13 @@ import java.util.List;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
-import xtvapps.retrobox.v2.atari800.R;
 import retrobox.utils.RetroBoxDialog;
 import retrobox.utils.RetroBoxUtils;
-import retrobox.vinput.GenericGamepad;
-import retrobox.vinput.AnalogGamepad.Axis;
-import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.AnalogGamepad;
+import retrobox.vinput.AnalogGamepad.Axis;
 import retrobox.vinput.AnalogGamepadListener;
+import retrobox.vinput.GenericGamepad;
+import retrobox.vinput.GenericGamepad.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
@@ -33,8 +32,9 @@ import retrobox.vinput.overlay.OverlayExtra;
 import xtvapps.core.AndroidFonts;
 import xtvapps.core.Callback;
 import xtvapps.core.SimpleCallback;
+import xtvapps.core.Utils;
 import xtvapps.core.content.KeyValue;
-import android.annotation.TargetApi;
+import xtvapps.retrobox.v2.atari800.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +43,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -51,10 +50,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -1013,17 +1009,18 @@ public class MainActivity extends Activity {
 		if (RetroBoxDialog.cancelDialog(this)) return;
 		
 		Log.d("MENU", "openRetroBoxMenu");
-		openRetroBoxMenu();
+		openRetroBoxMenu(true);
 	}
 	
-	private void openRetroBoxMenu() {
-		onPause();
+	private void openRetroBoxMenu(boolean pause) {
+		if (pause) onPause();
 		
 		List<ListOption> options = new ArrayList<ListOption>();
 		
         options.add(new ListOption("", "Cancel"));
         options.add(new ListOption("load", "Load State"));
         options.add(new ListOption("save", "Save State"));
+        options.add(new ListOption("slot", "Change Save State slot", "Slot " + saveSlot));
         
         if (OverlayExtra.hasExtraButtons()) {
             options.add(new ListOption("extra", "Extra Buttons"));
@@ -1046,6 +1043,9 @@ public class MainActivity extends Activity {
 					uiSaveState();
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
+				} else if (key.equals("slot")) {
+					uiChangeSlot();
+					return;
 				} else if (key.equals("help")) {
 					uiHelp();
 					return;
@@ -1061,6 +1061,33 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private void uiChangeSlot() {
+		List<ListOption> options = new ArrayList<ListOption>();
+		options.add(new ListOption("", "Cancel"));
+		for (int i = 0; i < 5; i++) {
+			options.add(new ListOption((i+1) + "", "Use save slot " + i,
+					(i == saveSlot) ? "Active" : ""));
+		}
+
+		RetroBoxDialog.showListDialog(this, "RetroBoxTV", options,
+				new Callback<KeyValue>() {
+					@Override
+					public void onResult(KeyValue result) {
+						int slot = Utils.str2i(result.getKey())-1;
+						if (slot >= 0 && slot != saveSlot) {
+							saveSlot = slot;
+							toastMessage("Save State slot changed to " + slot);
+						}
+						openRetroBoxMenu(false);
+					}
+
+					@Override
+					public void onError() {
+						openRetroBoxMenu(false);
+					}
+
+				});
+	}
 
 	protected void uiToggleButtons() {
 		buttonsVisible = !buttonsVisible ;
@@ -1157,7 +1184,7 @@ public class MainActivity extends Activity {
 			case EXIT: if (!down) uiQuitConfirm(); return true;
 			case LOAD_STATE: if (!down) uiLoadState(); return true;
 			case SAVE_STATE: if (!down) uiSaveState(); return true;
-			case MENU : if (!down) openRetroBoxMenu(); return true;
+			case MENU : if (!down) openRetroBoxMenu(true); return true;
 			default:
 				return false;
 			}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RetroBoxTV Atari 8-bit Support (v2)</string>
+    <string name="app_name">RetroBoxTV Atari 8-bit Support</string>
     <string name="emulator_activity_name">Droid800 - Emulator</string>
     <string name="sdcard_error">SD Card Error</string>
     <string name="directory_error">Directory Error</string>
