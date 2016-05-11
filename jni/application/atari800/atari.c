@@ -549,6 +549,9 @@ int Atari800_Initialise(int *argc, char *argv[])
 			else if (strcmp(argv[i], "-state_dir") == 0) {
 				if (i_a) Util_strlcpy(CFG_state_dir, argv[++i], sizeof(CFG_state_dir)); else a_m = TRUE;
 			}
+			else if (strcmp(argv[i], "-shots_dir") == 0) { // skip name here, it is handled in screen.c
+				if (i_a) ++i; else a_m = TRUE;
+			}
 			else if (strcmp(argv[i], "-state_name") == 0) {
 				if (i_a) Util_strlcpy(CFG_state_name, argv[++i], sizeof(CFG_state_name)); else a_m = TRUE;
 			}
