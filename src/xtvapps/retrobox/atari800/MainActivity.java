@@ -5,11 +5,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrobox.content.SaveStateInfo;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
 import retrobox.utils.RetroBoxDialog;
 import retrobox.utils.RetroBoxUtils;
+import retrobox.utils.SaveStateSelectorAdapter;
 import retrobox.vinput.AnalogGamepad;
 import retrobox.vinput.AnalogGamepad.Axis;
 import retrobox.vinput.AnalogGamepadListener;
@@ -73,6 +75,7 @@ import com.tvi910.android.sdl.SDLSurfaceView;
 
 public class MainActivity extends Activity {
 
+	private static final String LOGTAG = MainActivity.class.getSimpleName();
     private static MainActivity _instance = null;
     public static Context ctx;
     public static final String TAG = "com.droid800.emulator";
@@ -598,6 +601,8 @@ public class MainActivity extends Activity {
 
         gamepadInfoDialog = new GamepadInfoDialog(this);
         gamepadInfoDialog.loadFromIntent(getIntent());
+        
+        getLayoutInflater().inflate(R.layout.modal_dialog_savestates, al);
 
 	}
 
@@ -737,13 +742,18 @@ public class MainActivity extends Activity {
 		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
 		SDLInterface.nativeKey(SDLKeysym.SDLK_s, down?1:0);
 		if (!down) {
-			SDLInterface.nativeSetScreenshotPath(getSaveStateScreenshotPath());
+			SDLInterface.nativeSetScreenshotPath(getSaveStateScreenshotPath(saveSlot));
 			sendScreenshotEvent();
 		}
 	}
-	
-	private String getSaveStateScreenshotPath() {
-		File screenshotFile = new File(stateDir, stateName + "-" + saveSlot + ".png");
+
+	private String getSaveStatePath(int slot) {
+		File screenshotFile = new File(stateDir, stateName + "-" + slot + ".state");
+		return screenshotFile.getAbsolutePath();
+	}
+
+	private String getSaveStateScreenshotPath(int slot) {
+		File screenshotFile = new File(stateDir, stateName + "-" + slot + ".png");
 		return screenshotFile.getAbsolutePath();
 	}
 
@@ -1036,6 +1046,49 @@ public class MainActivity extends Activity {
 		openRetroBoxMenu(true);
 	}
 	
+	private void uiSelectSaveState(final boolean isLoadingState) {
+		List<SaveStateInfo> list = new ArrayList<SaveStateInfo>();
+		for(int i=0; i<6; i++) {
+			String fileName = getSaveStatePath(i);
+			String fileNameShot = getSaveStateScreenshotPath(i);
+			Log.d(LOGTAG, "Reading filestate from " + fileName);
+			list.add(new SaveStateInfo(new File(fileName), new File(fileNameShot)));
+		}
+		
+		final SaveStateSelectorAdapter adapter = new SaveStateSelectorAdapter(list, saveSlot);
+		
+		Callback<Integer> callback = new Callback<Integer>() {
+
+			@Override
+			public void onResult(Integer index) {
+				System.out.println("setting save slot to " + index + " loading " + isLoadingState);
+				boolean invalidSlot = isLoadingState && 
+						!((SaveStateInfo)adapter.getItem(index)).exists();
+				
+				if (!invalidSlot) {
+					saveSlot = index;
+					if (isLoadingState) {
+						uiLoadState();
+					} else {
+						uiSaveState();
+					}
+					RetroBoxDialog.cancelDialog(MainActivity.this);
+				}
+			}
+
+			@Override
+			public void onFinally() {
+				onResume();
+			}
+			
+		};
+		
+		String title = "Select slot to " + (isLoadingState ? "load from" : "save on");
+		
+		RetroBoxDialog.showSaveStatesDialog(this, title, adapter, callback);
+	}
+
+	
 	private void openRetroBoxMenu(boolean pause) {
 		if (pause) onPause();
 		
@@ -1044,7 +1097,6 @@ public class MainActivity extends Activity {
         options.add(new ListOption("", "Cancel"));
         options.add(new ListOption("load", "Load State"));
         options.add(new ListOption("save", "Save State"));
-        options.add(new ListOption("slot", "Change Save State slot", "Slot " + saveSlot));
         
         if (OverlayExtra.hasExtraButtons()) {
             options.add(new ListOption("extra", "Extra Buttons"));
@@ -1062,14 +1114,13 @@ public class MainActivity extends Activity {
 					uiQuit();
 					return;
 				} else if (key.equals("load")) {
-					uiLoadState();
+					uiSelectSaveState(true);
+					return;
 				} else if (key.equals("save")) {
-					uiSaveState();
+					uiSelectSaveState(false);
+					return;
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
-				} else if (key.equals("slot")) {
-					uiChangeSlot();
-					return;
 				} else if (key.equals("help")) {
 					uiHelp();
 					return;
