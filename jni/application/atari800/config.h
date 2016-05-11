@@ -120,7 +120,7 @@
 /* #undef HAVE_LIBGEM */
 
 /* Define to 1 if you have the `png' library (-lpng). */
-/* #define HAVE_LIBPNG 1 */
+#define HAVE_LIBPNG 1
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1

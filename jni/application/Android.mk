@@ -12,6 +12,7 @@ APP_SUBDIRS := $(patsubst $(LOCAL_PATH)/%, %, $(shell find $(LOCAL_PATH)/atari80
 
 LOCAL_CFLAGS := $(foreach D, $(APP_SUBDIRS), -I$(LOCAL_PATH)/$(D)) \
 				-I$(LOCAL_PATH)/../sdl/include \
+				-I$(LOCAL_PATH)/../png/include \
 				-I$(LOCAL_PATH)/../sdl_blitpool 
 
 LOCAL_CFLAGS += $(APPLICATION_ADDITIONAL_CFLAGS)
@@ -23,6 +24,7 @@ LOCAL_SRC_FILES := $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wil
 # Uncomment to also add C sources
 LOCAL_SRC_FILES += $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
 
+LOCAL_STATIC_LIBRARIES := png
 LOCAL_SHARED_LIBRARIES := sdl $(COMPILED_LIBRARIES)
 
 #LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog -lz -lstdc++

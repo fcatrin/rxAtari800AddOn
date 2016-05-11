@@ -7,7 +7,7 @@ APP_PROJECT_PATH := $(call my-dir)/..
 
 APP_OPTIM := release
 #APP_OPTIM := debug
-APP_MODULES := application sdl sdl_main 
+APP_MODULES := png application sdl sdl_main 
 
 #APP_ABI := armeabi armeabi-v7a
 #APP_ABI := armeabi-v7a
