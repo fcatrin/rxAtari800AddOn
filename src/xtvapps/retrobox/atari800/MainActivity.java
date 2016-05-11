@@ -1136,34 +1136,6 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void uiChangeSlot() {
-		List<ListOption> options = new ArrayList<ListOption>();
-		options.add(new ListOption("", "Cancel"));
-		for (int i = 0; i < 5; i++) {
-			options.add(new ListOption((i+1) + "", "Use save slot " + i,
-					(i == saveSlot) ? "Active" : ""));
-		}
-
-		RetroBoxDialog.showListDialog(this, "RetroBoxTV", options,
-				new Callback<KeyValue>() {
-					@Override
-					public void onResult(KeyValue result) {
-						int slot = Utils.str2i(result.getKey())-1;
-						if (slot >= 0 && slot != saveSlot) {
-							saveSlot = slot;
-							toastMessage("Save State slot changed to " + slot);
-						}
-						openRetroBoxMenu(false);
-					}
-
-					@Override
-					public void onError() {
-						openRetroBoxMenu(false);
-					}
-
-				});
-	}
-
 	protected void uiToggleButtons() {
 		buttonsVisible = !buttonsVisible ;
 		if (buttonsVisible) showExtrabuttons();
