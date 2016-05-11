@@ -1260,6 +1260,7 @@ public class MainActivity extends Activity {
 			case LOAD_STATE: if (!down) uiLoadState(); return true;
 			case SAVE_STATE: if (!down) uiSaveState(); return true;
 			case MENU : if (!down) openRetroBoxMenu(true); return true;
+			case SCREENSHOT : sendScreenshotEvent(); return true;
 			default:
 				return false;
 			}
