@@ -193,6 +193,7 @@ public class MainActivity extends Activity {
         
         Intent intent = getIntent();
         String romFile = intent.getStringExtra("game");
+        String shotsDir = intent.getStringExtra("shotsDir");
         String stateDir = intent.getStringExtra("stateDir");
         String stateName = intent.getStringExtra("stateName");
         String machine = intent.getStringExtra("machine");
@@ -215,6 +216,7 @@ public class MainActivity extends Activity {
 	    SharedPreferences.Editor editor = preferences.edit();
 	    editor.putString("osromDir", osromDir);
 	    editor.putString("romfile", romFile);
+	    editor.putString("shotsDir", shotsDir);
 	    editor.putString("stateDir", stateDir);
 	    editor.putString("stateName", stateName);
 	    editor.putString("machine", machine);
@@ -451,6 +453,7 @@ public class MainActivity extends Activity {
             gameRom = Cartridge.getInstance().prepareCartridge(gameRom);
         }
         String osromDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osromDir", "");
+        String shotsDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("shotsDir",null);
         String stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
         String stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
         String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
@@ -547,6 +550,11 @@ public class MainActivity extends Activity {
         	arglist.add(stateDir);
         	arglist.add("-state_name");
         	arglist.add(stateName);
+        }
+        
+        if (shotsDir!=null) {
+        	arglist.add("-shots_dir");
+        	arglist.add(shotsDir);
         }
 
         if (!gameRom.equals("")) {
@@ -726,7 +734,15 @@ public class MainActivity extends Activity {
 	private void sendSaveState(boolean down) {
 		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
 		SDLInterface.nativeKey(SDLKeysym.SDLK_s, down?1:0);
+		if (!down) {
+			sendScreenshotEvent();
+		}
 	}
+	
+	private void sendScreenshotEvent() {
+		SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F10);
+	}
+	
 	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {

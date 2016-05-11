@@ -69,13 +69,15 @@ int Screen_show_disk_led = TRUE;
 int Screen_show_sector_counter = FALSE;
 
 #ifdef HAVE_LIBPNG
-#define DEFAULT_SCREENSHOT_FILENAME_FORMAT "atari%03d.png"
+#define DEFAULT_SCREENSHOT_FILENAME_FORMAT "%s/shot.%03d.png"
 #else
-#define DEFAULT_SCREENSHOT_FILENAME_FORMAT "atari%03d.pcx"
+#define DEFAULT_SCREENSHOT_FILENAME_FORMAT "%s/shot.%03d.pcx"
 #endif
 
 static char screenshot_filename_format[FILENAME_MAX] = DEFAULT_SCREENSHOT_FILENAME_FORMAT;
 static int screenshot_no_max = 1000;
+
+static char shotsDir[FILENAME_MAX] = "";
 
 /* converts "foo%bar##.pcx" to "foo%%bar%02d.pcx" */
 static void Screen_SetScreenshotFilenamePattern(const char *p)
@@ -128,6 +130,12 @@ int Screen_Initialise(int *argc, char *argv[])
 		if (strcmp(argv[i], "-screenshots") == 0) {
 			if (i_a)
 				Screen_SetScreenshotFilenamePattern(argv[++i]);
+			else a_m = TRUE;
+		}
+		if (strcmp(argv[i], "-shots_dir") == 0) {
+			if (i_a) {
+				strcpy(shotsDir, argv[++i]);
+			}
 			else a_m = TRUE;
 		}
 		if (strcmp(argv[i], "-showspeed") == 0) {
@@ -372,7 +380,7 @@ void Screen_FindScreenshotFilename(char *buffer)
 			no = 0;
 			overwrite = TRUE;
 		}
-		sprintf(buffer, screenshot_filename_format, no);
+		sprintf(buffer, screenshot_filename_format, shotsDir, no);
 		if (overwrite)
 			break;
 		if (!Util_fileexists(buffer))
@@ -540,6 +548,9 @@ int Screen_SaveScreenshot(const char *filename, int interlaced)
 	ULONG *main_screen_atari;
 	UBYTE *ptr1;
 	UBYTE *ptr2;
+
+	Log_print("save screenshot to %s", filename);
+
 	if (striendswith(filename, ".pcx"))
 		is_png = 0;
 #ifdef HAVE_LIBPNG
