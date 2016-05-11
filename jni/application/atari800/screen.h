@@ -48,5 +48,6 @@ void Screen_FindScreenshotFilename(char *buffer);
 int Screen_SaveScreenshot(const char *filename, int interlaced);
 void Screen_SaveNextScreenshot(int interlaced);
 void Screen_EntireDirty(void);
+void Screen_SetScreenshotPath(char *path);
 
 #endif /* SCREEN_H_ */

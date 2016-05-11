@@ -162,6 +162,8 @@ public class MainActivity extends Activity {
 
 	private static Mapper mapper;
 	private VirtualInputDispatcher vinputDispatcher;
+	private String stateDir;
+	private String stateName;
     
 	
 	@Override
@@ -454,8 +456,8 @@ public class MainActivity extends Activity {
         }
         String osromDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("osromDir", "");
         String shotsDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("shotsDir",null);
-        String stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
-        String stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
+        stateDir =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateDir",null);
+        stateName =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("stateName",null);
         String refreshRate = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("skipFrame", "0");
         boolean showSpeed = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("showspeed", false);
         boolean enableSound = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean("sound", true);
@@ -735,10 +737,16 @@ public class MainActivity extends Activity {
 		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
 		SDLInterface.nativeKey(SDLKeysym.SDLK_s, down?1:0);
 		if (!down) {
+			SDLInterface.nativeSetScreenshotPath(getSaveStateScreenshotPath());
 			sendScreenshotEvent();
 		}
 	}
 	
+	private String getSaveStateScreenshotPath() {
+		File screenshotFile = new File(stateDir, stateName + "-" + saveSlot + ".png");
+		return screenshotFile.getAbsolutePath();
+	}
+
 	private void sendScreenshotEvent() {
 		SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F10);
 	}

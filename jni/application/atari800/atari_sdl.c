@@ -2606,6 +2606,10 @@ int PLATFORM_TRIG(int num)
 	return 1;
 }
 
+void main_set_screenshot_path(char *path) {
+	Screen_SetScreenshotPath(path);
+}
+
 int main(int argc, char **argv)
 {
 	/* initialise Atari800 core */

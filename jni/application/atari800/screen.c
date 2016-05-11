@@ -78,6 +78,7 @@ static char screenshot_filename_format[FILENAME_MAX] = DEFAULT_SCREENSHOT_FILENA
 static int screenshot_no_max = 1000;
 
 static char shotsDir[FILENAME_MAX] = "";
+static char screenshot_path[FILENAME_MAX] = "";
 
 /* converts "foo%bar##.pcx" to "foo%%bar%02d.pcx" */
 static void Screen_SetScreenshotFilenamePattern(const char *p)
@@ -586,11 +587,21 @@ int Screen_SaveScreenshot(const char *filename, int interlaced)
 	return TRUE;
 }
 
+void Screen_SetScreenshotPath(char *path) {
+	strcpy(screenshot_path, path);
+}
+
 void Screen_SaveNextScreenshot(int interlaced)
 {
 	char filename[FILENAME_MAX];
-	Screen_FindScreenshotFilename(filename);
+	if (strlen(screenshot_path)>0) {
+		strcpy(filename, screenshot_path);
+	} else {
+		Screen_FindScreenshotFilename(filename);
+	}
+
 	Screen_SaveScreenshot(filename, interlaced);
+	strcpy(screenshot_path, "");
 }
 
 void Screen_EntireDirty(void)
