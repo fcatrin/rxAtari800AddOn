@@ -2,9 +2,8 @@
 <manifest 
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="xtvapps.retrobox.v2.atari800"
-    android:installLocation="auto"
-    android:versionCode="13025"
-    android:versionName="1.3-25"
+    android:versionCode="13026"
+    android:versionName="1.3-26"
     android:sharedUserId="psychoworld.retrobox.v2">
     
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
@@ -28,7 +27,6 @@
 
         <activity 
            android:name="xtvapps.retrobox.atari800.MainActivity"
-           android:label="@string/emulator_activity_name"
            android:process="com.droid800.emulator"
            android:screenOrientation="sensorLandscape"
            android:configChanges="orientation|keyboard|keyboardHidden">
