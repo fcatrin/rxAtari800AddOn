@@ -733,11 +733,6 @@ public class MainActivity extends Activity {
 		finish();
 	}
 	
-	private void sendLoadState(boolean down) {
-		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
-		SDLInterface.nativeKey(SDLKeysym.SDLK_l, down?1:0);
-	}
-
 	private void sendSaveState(boolean down) {
 		SDLInterface.nativeKey(SDLKeysym.SDLK_LALT, down?1:0);
 		SDLInterface.nativeKey(SDLKeysym.SDLK_s, down?1:0);
@@ -775,11 +770,11 @@ public class MainActivity extends Activity {
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
-        	 sendLoadState(true);
+        	 // sendLoadState(true);
         	 return true;
          }
          if (nativeCode == SDLKeysym.SDLK_F15) {
-        	 sendSaveState(true);
+        	 //sendSaveState(true);
         	 return true;
          }
          
@@ -851,11 +846,11 @@ public class MainActivity extends Activity {
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
-        	 sendLoadState(false);
+        	 // sendLoadState(false);
         	 return true;
          }
          if (nativeCode == SDLKeysym.SDLK_F15) {
-        	 sendSaveState(false);
+        	 // sendSaveState(false);
         	 return true;
          }
 
@@ -1143,27 +1138,14 @@ public class MainActivity extends Activity {
 	}
     
     protected void uiLoadState() {
-    	SDLInterface.setSaveSlot(saveSlot);
-    	sendLoadState(true);
-    	new Handler().postDelayed(new Runnable(){
-			@Override
-			public void run() {
-				sendLoadState(false);
-				toastMessage("State was restored");
-			}
-		}, 50);
+    	NativeInterface.loadState(saveSlot);
+    	toastMessage("State restored from slot #" + (saveSlot+1));
     }
 
     protected void uiSaveState() {
-    	SDLInterface.setSaveSlot(saveSlot);
-    	sendSaveState(true);
-    	new Handler().postDelayed(new Runnable(){
-			@Override
-			public void run() {
-				sendSaveState(false);
-				toastMessage("State was saved");
-			}
-		}, 50);
+		SDLInterface.nativeSetScreenshotPath(getSaveStateScreenshotPath(saveSlot));
+    	NativeInterface.saveState(saveSlot);
+    	toastMessage("State saved to slot #" + (saveSlot+1));
     }
     
     protected void uiHelp() {

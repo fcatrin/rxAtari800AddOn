@@ -76,6 +76,8 @@
 #include "xep80_fonts.h"
 #include "af80.h"
 
+#include "retrobox.h"
+
 /* you can set that variables in code, or change it when emulator is running
    I am not sure what to do with sound_enabled (can't turn it on inside
    emulator, probably we need two variables or command line argument) */
@@ -866,6 +868,21 @@ int PLATFORM_Keyboard(void)
  	static int lastuni = 0;
 	int shiftctrl = 0;
 	SDL_Event event;
+
+	if (retrobox_ui_function) {
+		LOG_D("perform action %d", retrobox_ui_function);
+		UI_alt_function = retrobox_ui_function;
+		retrobox_ui_function = 0;
+		return AKEY_UI;
+	}
+	if (retrobox_screenshot) {
+		if (retrobox_screenshot-- == 2) {
+			return AKEY_NONE;
+		}
+		LOG_D("request screenshot return key %d", AKEY_SCREENSHOT_INTERLACE);
+		return AKEY_SCREENSHOT_INTERLACE;
+	}
+
 
 #ifndef ANDROID
 	/* Very ugly fix for SDL CAPSLOCK brokenness.  This will let the user

@@ -142,6 +142,8 @@
 #include "videomode.h"
 #endif
 
+#include "retrobox.h"
+
 int Atari800_machine_type = Atari800_MACHINE_XLXE;
 int Atari800_tv_mode = Atari800_TV_PAL;
 int Atari800_disable_basic = TRUE;
@@ -1231,9 +1233,11 @@ void Atari800_Frame(void)
 	case AKEY_SCREENSHOT:
 		Screen_SaveNextScreenshot(FALSE);
 		break;
-	case AKEY_SCREENSHOT_INTERLACE:
+	case AKEY_SCREENSHOT_INTERLACE: {
+		LOG_D("case AKEY_SCREENSHOT_INTERLACE");
 		Screen_SaveNextScreenshot(TRUE);
 		break;
+	}
 #endif /* CURSES_BASIC */
 	case AKEY_PBI_BB_MENU:
 #ifdef PBI_BB

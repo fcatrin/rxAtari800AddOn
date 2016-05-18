@@ -61,6 +61,9 @@
 #include "ui.h"
 #include "ui_basic.h"
 #include "util.h"
+
+#include "retrobox.h"
+
 #ifdef SOUND
 #include "pokeysnd.h"
 #include "sndsave.h"
@@ -1192,14 +1195,6 @@ static void AtariSettings(void)
 		}
 	}
 }
-
-static int retrobox_save_slot = 0;
-
-JNIEXPORT void JNICALL Java_com_tvi910_android_sdl_SDLInterface_setSaveSlot ( JNIEnv*  env, jobject thiz, jint slot)
-{
-    retrobox_save_slot = slot;
-};
-
 
 static void SaveState(void)
 {

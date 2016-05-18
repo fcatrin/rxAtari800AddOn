@@ -38,6 +38,7 @@
 #include "screen.h"
 #include "sio.h"
 #include "util.h"
+#include "retrobox.h"
 
 #define ATARI_VISIBLE_WIDTH 336
 #define ATARI_LEFT_MARGIN 24
@@ -550,7 +551,7 @@ int Screen_SaveScreenshot(const char *filename, int interlaced)
 	UBYTE *ptr1;
 	UBYTE *ptr2;
 
-	Log_print("save screenshot to %s", filename);
+	LOG_D("save screenshot to %s", filename);
 
 	if (striendswith(filename, ".pcx"))
 		is_png = 0;
@@ -600,8 +601,10 @@ void Screen_SaveNextScreenshot(int interlaced)
 		Screen_FindScreenshotFilename(filename);
 	}
 
+	LOG_D("Screen_SaveNextScreenshot %s", filename);
 	Screen_SaveScreenshot(filename, interlaced);
 	strcpy(screenshot_path, "");
+	retrobox_screenshot = 0;
 }
 
 void Screen_EntireDirty(void)
