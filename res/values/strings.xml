@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RetroBoxTV Atari800 Add-on</string>
-    <string name="emulator_activity_name">Droid800 - Emulator</string>
+    <string name="emulator_activity_name">RetroBoxTV Atari800 Add-on</string>
     <string name="sdcard_error">SD Card Error</string>
     <string name="directory_error">Directory Error</string>
     <string name="no_files_error">No Files</string>
