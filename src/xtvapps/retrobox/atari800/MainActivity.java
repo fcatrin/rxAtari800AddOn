@@ -282,6 +282,7 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
         KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
         KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
+        KeyTranslator.addTranslation("ATR_RETURN", SDLKeysym.SDLK_RETURN);
         // second player
         KeyTranslator.addTranslation("ATR_LEFT2", SDLKeysym.SDLK_KP1);
         KeyTranslator.addTranslation("ATR_RIGHT2", SDLKeysym.SDLK_KP3);
