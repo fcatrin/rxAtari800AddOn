@@ -2,8 +2,8 @@
 <manifest 
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="xtvapps.retrobox.v2.atari800"
-    android:versionCode="13026"
-    android:versionName="1.3-26"
+    android:versionCode="13027"
+    android:versionName="1.3-27"
     android:sharedUserId="psychoworld.retrobox.v2">
     
     <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="21"/>
