@@ -5,6 +5,41 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tvi910.android.core.AccelerometerJoystick;
+import com.tvi910.android.core.Keymap;
+import com.tvi910.android.core.TouchpadJoystick;
+import com.tvi910.android.core.VirtualControllerManager;
+import com.tvi910.android.core.buttonpanel.ButtonCallback;
+import com.tvi910.android.core.buttonpanel.ButtonPanel;
+import com.tvi910.android.sdl.AudioThread;
+import com.tvi910.android.sdl.LoadLibrary;
+import com.tvi910.android.sdl.SDLInterface;
+import com.tvi910.android.sdl.SDLKeysym;
+import com.tvi910.android.sdl.SDLSurfaceView;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.media.AudioManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Display;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
+import android.widget.Toast;
 import retrobox.content.SaveStateInfo;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
@@ -34,44 +69,8 @@ import retrobox.vinput.overlay.OverlayExtra;
 import xtvapps.core.AndroidFonts;
 import xtvapps.core.Callback;
 import xtvapps.core.SimpleCallback;
-import xtvapps.core.Utils;
 import xtvapps.core.content.KeyValue;
 import xtvapps.retrobox.v2.atari800.R;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.media.AudioManager;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.PowerManager;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Display;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AbsoluteLayout;
-import android.widget.Toast;
-
-import com.tvi910.android.core.AccelerometerJoystick;
-import com.tvi910.android.core.Keymap;
-import com.tvi910.android.core.TouchpadJoystick;
-import com.tvi910.android.core.VirtualControllerManager;
-import com.tvi910.android.core.buttonpanel.ButtonCallback;
-import com.tvi910.android.core.buttonpanel.ButtonPanel;
-import com.tvi910.android.sdl.AudioThread;
-import com.tvi910.android.sdl.LoadLibrary;
-import com.tvi910.android.sdl.SDLInterface;
-import com.tvi910.android.sdl.SDLKeysym;
-import com.tvi910.android.sdl.SDLSurfaceView;
 
 public class MainActivity extends Activity {
 
@@ -84,7 +83,8 @@ public class MainActivity extends Activity {
 	private GamepadInfoDialog gamepadInfoDialog;
     AnalogGamepad analogGamepad;
 
-    
+    List<String> disks = new ArrayList<String>();
+
     private static class ButtonInfo {
         String name;
         int colspan;
@@ -211,6 +211,12 @@ public class MainActivity extends Activity {
         	String prefix = "j" + (i+1);
         	String deviceDescriptor = intent.getStringExtra(prefix + "DESCRIPTOR");
         	Mapper.registerGamepad(i, deviceDescriptor);
+        }
+        
+        disks.clear();
+        for(int i=1; i<=8; i++) {
+        	String disk = intent.getStringExtra("disk" + i);
+        	if (disk!=null) disks.add(disk);
         }
         
         boolean useGamepad = Mapper.hasGamepads();
@@ -452,7 +458,6 @@ public class MainActivity extends Activity {
         // set up the sdl command line args.
         String systemType = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("machine", "800XL");
         String gameRom = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("romfile","");
-        Log.d("com.droid800.emulator", "Archivo a cargar " + gameRom);
         
         if (!systemType.equals("5200")) {
             gameRom = Cartridge.getInstance().prepareCartridge(gameRom);
@@ -562,9 +567,16 @@ public class MainActivity extends Activity {
         	arglist.add(shotsDir);
         }
 
-        if (!gameRom.equals("")) {
-            arglist.add(gameRom);
+        String mainMedia = gameRom;
+        if (!disks.isEmpty()) {
+        	mainMedia = disks.get(0);
+        } 
+        
+        if (!mainMedia.equals("")) {
+            arglist.add(mainMedia);
         }
+
+        Log.d(TAG, "Main media " + mainMedia);
 
         Log.d(TAG, "args" + arglist);
         
@@ -1082,6 +1094,27 @@ public class MainActivity extends Activity {
 		
 		RetroBoxDialog.showSaveStatesDialog(this, title, adapter, callback);
 	}
+	
+	private void uiChangeDisk() {
+		List<ListOption> options = new ArrayList<ListOption>();
+		for(String disk : disks) {
+			File diskFile = new File(disk);
+			options.add(new ListOption(disk, diskFile.getName()));
+		}
+		
+		RetroBoxDialog.showListDialog(this, "Select disk", options, new Callback<KeyValue>() {
+			@Override
+			public void onResult(KeyValue result) {
+				SDLInterface.nativeMountDisk(0, result.getKey(), 0);
+				toastMessage("Disk inserted: " + result.getValue());
+			}
+
+			@Override
+			public void onFinally() {
+				onResume();
+			}
+		});
+	}
 
 	
 	private void openRetroBoxMenu(boolean pause) {
@@ -1092,6 +1125,10 @@ public class MainActivity extends Activity {
         options.add(new ListOption("", "Cancel"));
         options.add(new ListOption("load", "Load State"));
         options.add(new ListOption("save", "Save State"));
+        
+        if (disks.size()>1) {
+        	options.add(new ListOption("mount", "Change disk"));
+        }
         
         if (OverlayExtra.hasExtraButtons()) {
             options.add(new ListOption("extra", "Extra Buttons"));
@@ -1118,6 +1155,9 @@ public class MainActivity extends Activity {
 					uiToggleButtons();
 				} else if (key.equals("help")) {
 					uiHelp();
+					return;
+				} else if (key.equals("mount")) {
+					uiChangeDisk();
 					return;
 				}
 				onResume();

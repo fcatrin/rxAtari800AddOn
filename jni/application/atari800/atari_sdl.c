@@ -2627,6 +2627,18 @@ void main_set_screenshot_path(char *path) {
 	Screen_SetScreenshotPath(path);
 }
 
+int   pending_mount_drive = 0;
+char *pending_mount_path = NULL;
+int   pending_mount_readonly = 0;
+
+void main_mount_disk(int drive, char *path, int readonly) {
+	pending_mount_path = strdup(path);
+	pending_mount_readonly = readonly;
+	pending_mount_drive = drive + 1;
+
+	Log_print("Request mount: %s on drive %d", pending_mount_path, pending_mount_drive);
+}
+
 int main(int argc, char **argv)
 {
 	/* initialise Atari800 core */
@@ -2640,6 +2652,12 @@ int main(int argc, char **argv)
 		Atari800_Frame();
 		if (Atari800_display_screen)
 			PLATFORM_DisplayScreen();
+		if (pending_mount_drive > 0) {
+			SIO_Mount(pending_mount_drive, pending_mount_path, pending_mount_readonly);
+			Log_print("Mounted: %s on drive %d", pending_mount_path, pending_mount_drive);
+			pending_mount_path = NULL;
+			pending_mount_drive = 0;
+		}
 	}
 }
 
