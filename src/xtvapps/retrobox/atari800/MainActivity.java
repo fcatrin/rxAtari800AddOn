@@ -1063,7 +1063,7 @@ public class MainActivity extends Activity {
 			list.add(new SaveStateInfo(new File(fileName), new File(fileNameShot)));
 		}
 		
-		final SaveStateSelectorAdapter adapter = new SaveStateSelectorAdapter(list, saveSlot);
+		final SaveStateSelectorAdapter adapter = new SaveStateSelectorAdapter(this, list, saveSlot);
 		
 		Callback<Integer> callback = new Callback<Integer>() {
 
@@ -1091,7 +1091,9 @@ public class MainActivity extends Activity {
 			
 		};
 		
-		String title = "Select slot to " + (isLoadingState ? "load from" : "save on");
+		String title = isLoadingState ?
+				getString(R.string.emu_slot_load_title) :
+				getString(R.string.emu_slot_save_title);
 		
 		RetroBoxDialog.showSaveStatesDialog(this, title, adapter, callback);
 	}
@@ -1103,11 +1105,11 @@ public class MainActivity extends Activity {
 			options.add(new ListOption(disk, diskFile.getName()));
 		}
 		
-		RetroBoxDialog.showListDialog(this, "Select disk", options, new Callback<KeyValue>() {
+		RetroBoxDialog.showListDialog(this, getString(R.string.emu_disk_select), options, new Callback<KeyValue>() {
 			@Override
 			public void onResult(KeyValue result) {
 				SDLInterface.nativeMountDisk(0, result.getKey(), 0);
-				toastMessage("Disk inserted: " + result.getValue());
+				toastMessage(getString(R.string.emu_disk_inserted).replace("{name}", result.getValue()));
 			}
 
 			@Override
@@ -1123,22 +1125,22 @@ public class MainActivity extends Activity {
 		
 		List<ListOption> options = new ArrayList<ListOption>();
 		
-        options.add(new ListOption("", "Cancel"));
-        options.add(new ListOption("load", "Load State"));
-        options.add(new ListOption("save", "Save State"));
+        options.add(new ListOption("", getString(R.string.emu_opt_cancel)));
+        options.add(new ListOption("load", getString(R.string.emu_opt_state_load)));
+        options.add(new ListOption("save", getString(R.string.emu_opt_state_save)));
         
         if (disks.size()>1) {
-        	options.add(new ListOption("mount", "Change disk"));
+        	options.add(new ListOption("mount", getString(R.string.emu_opt_change_disk)));
         }
         
         if (OverlayExtra.hasExtraButtons()) {
-            options.add(new ListOption("extra", "Extra Buttons"));
+            options.add(new ListOption("extra", getString(R.string.emu_opt_extra_buttons)));
         }
         	
-        options.add(new ListOption("help", "Help"));
-        options.add(new ListOption("quit", "Quit"));
+        options.add(new ListOption("help", getString(R.string.emu_opt_help)));
+        options.add(new ListOption("quit", getString(R.string.emu_opt_quit)));
         
-        RetroBoxDialog.showListDialog(this, "RetroBoxTV", options, new Callback<KeyValue>() {
+        RetroBoxDialog.showListDialog(this, getString(R.string.emu_opt_title), options, new Callback<KeyValue>() {
 			
 			@Override
 			public void onResult(KeyValue result) {
@@ -1180,13 +1182,13 @@ public class MainActivity extends Activity {
     
     protected void uiLoadState() {
     	NativeInterface.loadState(saveSlot);
-    	toastMessage("State restored from slot #" + (saveSlot+1));
+    	toastMessage(getString(R.string.emu_slot_loaded).replace("{n}", String.valueOf(saveSlot+1)));
     }
 
     protected void uiSaveState() {
 		SDLInterface.nativeSetScreenshotPath(getSaveStateScreenshotPath(saveSlot));
     	NativeInterface.saveState(saveSlot);
-    	toastMessage("State saved to slot #" + (saveSlot+1));
+    	toastMessage(getString(R.string.emu_slot_saved).replace("{n}", String.valueOf(saveSlot+1)));
     }
     
     protected void uiHelp() {
