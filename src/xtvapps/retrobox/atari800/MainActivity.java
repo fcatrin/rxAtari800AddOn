@@ -1130,7 +1130,7 @@ public class MainActivity extends Activity {
         options.add(new ListOption("save", getString(R.string.emu_opt_state_save)));
         
         if (disks.size()>1) {
-        	options.add(new ListOption("mount", getString(R.string.emu_opt_change_disk)));
+        	options.add(new ListOption("mount", getString(R.string.emu_opt_disk_change)));
         }
         
         if (OverlayExtra.hasExtraButtons()) {
