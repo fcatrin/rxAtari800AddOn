@@ -16,6 +16,7 @@ import com.tvi910.android.sdl.LoadLibrary;
 import com.tvi910.android.sdl.SDLInterface;
 import com.tvi910.android.sdl.SDLKeysym;
 import com.tvi910.android.sdl.SDLSurfaceView;
+import com.tvi910.android.sdl.DemoRenderer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -425,6 +426,9 @@ public class MainActivity extends Activity {
 		mLoadLibraryStub = new LoadLibrary();
 		mAudioThread = new AudioThread(this);
 
+		boolean isInvertedRGB = getIntent().getBooleanExtra("invertRGB", false);
+		DemoRenderer.nativeSetInvertRGB(!isInvertedRGB);
+		
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         
