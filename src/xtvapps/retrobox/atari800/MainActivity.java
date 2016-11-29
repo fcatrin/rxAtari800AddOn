@@ -427,7 +427,7 @@ public class MainActivity extends Activity {
 		mAudioThread = new AudioThread(this);
 
 		boolean isInvertedRGB = getIntent().getBooleanExtra("invertRGB", false);
-		DemoRenderer.nativeSetInvertRGB(!isInvertedRGB);
+		DemoRenderer.nativeSetInvertRGB(isInvertedRGB);
 		
         initSDL(landscapeMode, useGamepad);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
