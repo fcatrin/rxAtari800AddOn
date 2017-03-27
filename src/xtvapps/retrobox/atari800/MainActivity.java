@@ -324,7 +324,7 @@ public class MainActivity extends Activity {
 			public void onMouseMove(int mousex, int mousey) {}
 			
 			@Override
-			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty) {
+			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty, float raxisx, float raxisy) {
 				vinputDispatcher.sendAnalog(gamepad, Analog.LEFT, axisx, axisy, hatx, haty);
 			}
 			
