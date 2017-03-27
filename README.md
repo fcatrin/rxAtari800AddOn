@@ -8,5 +8,8 @@ http://atariage.com/forums/topic/192841-droid800-emulator-for-android/
 To build it you need the SDL port for Android that this emulator depends on, and the RetroX libraries
 
 https://github.com/fcatrin/rbxAtari800AddOn
+
 https://github.com/fcatrin/retroxlibs
 
+This port is used by the RetroX frontend
+http://retrox.tv
