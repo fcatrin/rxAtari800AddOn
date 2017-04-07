@@ -341,6 +341,9 @@ public class MainActivity extends Activity {
 			public void onDigitalY(GenericGamepad gamepad, Axis axis, boolean on) {
 			}
 
+			@Override
+			public void onTriggersAnalog(GenericGamepad gamepad, int deviceId, float left, float right) {}
+
 		});
 
         
