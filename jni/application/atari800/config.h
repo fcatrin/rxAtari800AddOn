@@ -502,7 +502,7 @@
 #endif
 
 /* Define if unaligned word access is ok. */
-#define WORDS_UNALIGNED_OK 1
+/* #define WORDS_UNALIGNED_OK 1 */
 
 /* Target: Standard X11. */
 /* #undef X11 */
