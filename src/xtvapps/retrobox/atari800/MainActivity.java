@@ -462,6 +462,7 @@ public class MainActivity extends Activity {
         AbsoluteLayout al = new AbsoluteLayout(this);
         setContentView(al);
 
+        boolean needsBasic = getIntent().getBooleanExtra("basic", false);
 
         // set up the sdl command line args.
         String systemType = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString("machine", "800XL");
@@ -558,10 +559,16 @@ public class MainActivity extends Activity {
             String osROM = osromDir + "/ATARIXL.ROM";
             arglist.add(osROM);
         }
-
-        arglist.add("-basic_rom"); // this is required or the emaulator will
-                                   // try and load teh basic rom too
-        arglist.add("none");
+        
+        if (needsBasic) {
+        	arglist.add("-basic");
+        	arglist.add("-basic_rom"); // this is required or the emaulator will
+        	arglist.add(osromDir + "/ATARIBAS.ROM");
+        } else {
+        	arglist.add("-nobasic");
+        	arglist.add("-basic_rom"); // this is required or the emaulator will
+            arglist.add("none");       // try and load teh basic rom too
+        }
         
         if (stateDir!=null && stateName!=null) {
         	arglist.add("-state_dir");
