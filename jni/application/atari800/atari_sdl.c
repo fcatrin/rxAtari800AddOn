@@ -634,9 +634,18 @@ VIDEOMODE_resolution_t *PLATFORM_AvailableResolutions(unsigned int *size)
             height = 224;
         }
         if (keep_aspect_ratio == 1) {
+            float device_aspect_ratio = (float)modes[i]->w / modes[i]->h;
+            float atari_aspect_ratio  = (float)width / height;
 
-            if (modes[i]->w > modes[i]->h) {
-                // landscape
+        	Log_print("PLATFORM_AvailableResolutions [%u] device:%ux%u atari:%ux%u",
+        			i, modes[i]->w, modes[i]->h,
+					width , height);
+
+        	Log_print("PLATFORM_AvailableResolutions [%u] aspect device:%f atari:%f",
+        			i, device_aspect_ratio, atari_aspect_ratio);
+
+            if (device_aspect_ratio >= atari_aspect_ratio) {
+            	// landscape
                 resolutions[i].width = (((modes[i]->w*height)/ modes[i]->h)/2)*2;
                 resolutions[i].height = height;
 
