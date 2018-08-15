@@ -27,4 +27,7 @@
     <drawable name="semi_black">#80000000</drawable>
     <drawable name="white">#fff</drawable>
     <drawable name="green">#7700ff00</drawable>
+    
+   <color name="pal_hl_background">#D08b5db5</color>
+    
 </resources>

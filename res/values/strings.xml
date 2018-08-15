@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">PRG Atari800 Add-on</string>
     <string name="emulator_activity_name">PRG Atari800 Add-on</string>
+    <string name="emu_opt_title">PRG Options</string>
     <string name="sdcard_error">SD Card Error</string>
     <string name="directory_error">Directory Error</string>
     <string name="no_files_error">No Files</string>
