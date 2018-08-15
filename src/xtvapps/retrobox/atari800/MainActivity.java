@@ -71,7 +71,7 @@ import xtvapps.core.AndroidFonts;
 import xtvapps.core.Callback;
 import xtvapps.core.SimpleCallback;
 import xtvapps.core.content.KeyValue;
-import xtvapps.retrobox.v2.atari800.R;
+import xtvapps.prg.atari800.R;
 
 public class MainActivity extends Activity {
 

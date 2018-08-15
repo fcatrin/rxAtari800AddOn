@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 
 import android.widget.TextView;
-import xtvapps.retrobox.v2.atari800.R;
+import xtvapps.prg.atari800.R;
 
 /** 
  * Simple activity for showing information about this application
