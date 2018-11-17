@@ -28,6 +28,6 @@
     <drawable name="white">#fff</drawable>
     <drawable name="green">#7700ff00</drawable>
     
-   <color name="pal_hl_background">#D08b5db5</color>
+   <color name="pal_hl_background">#D0ED464D</color>
     
 </resources>

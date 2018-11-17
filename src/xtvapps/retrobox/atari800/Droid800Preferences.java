@@ -2,7 +2,7 @@
 package xtvapps.retrobox.atari800;
 
 import com.tvi910.android.core.PreferenceActivityUpdateSummary;
-import xtvapps.prg.atari800.R;
+import xtvapps.res.atari800.R;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
