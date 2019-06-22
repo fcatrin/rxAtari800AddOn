@@ -307,11 +307,11 @@ public class MainActivity extends Activity {
         Mapper.initGestureDetector(this);
         Mapper.joinPorts = getIntent().getBooleanExtra("joinPorts", false);
         
-        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_KP4) ;
-        SDLInterface.setRightKeycode(SDLKeysym.SDLK_KP6) ;
-        SDLInterface.setUpKeycode(SDLKeysym.SDLK_KP8);
-        SDLInterface.setDownKeycode(SDLKeysym.SDLK_KP2) ;
-        SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
+        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_JOY_0_LEFT) ;
+        SDLInterface.setRightKeycode(SDLKeysym.SDLK_JOY_0_RIGHT) ;
+        SDLInterface.setUpKeycode(SDLKeysym.SDLK_JOY_0_UP);
+        SDLInterface.setDownKeycode(SDLKeysym.SDLK_JOY_0_DOWN) ;
+        SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_JOY_0_TRIGGER) ;
 
         extraButtonsView = new ExtraButtonsView(this);
         gamepadView = new GamepadView(this, overlay);
