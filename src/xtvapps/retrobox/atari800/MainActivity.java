@@ -272,24 +272,25 @@ public class MainActivity extends Activity {
         KeyTranslator.addTranslation("ATR_KEY_UP", SDLKeysym.SDLK_UP);
         KeyTranslator.addTranslation("ATR_KEY_DOWN", SDLKeysym.SDLK_DOWN);
 
-        KeyTranslator.addTranslation("ATR_LEFT", SDLKeysym.SDLK_KP4);
-        KeyTranslator.addTranslation("ATR_RIGHT", SDLKeysym.SDLK_KP6);
-        KeyTranslator.addTranslation("ATR_UP", SDLKeysym.SDLK_KP8);
-        KeyTranslator.addTranslation("ATR_DOWN", SDLKeysym.SDLK_KP5);
+        KeyTranslator.addTranslation("ATR_LEFT",    SDLKeysym.SDLK_JOY_0_LEFT);
+        KeyTranslator.addTranslation("ATR_RIGHT",   SDLKeysym.SDLK_JOY_0_RIGHT);
+        KeyTranslator.addTranslation("ATR_UP",      SDLKeysym.SDLK_JOY_0_UP);
+        KeyTranslator.addTranslation("ATR_DOWN",    SDLKeysym.SDLK_JOY_0_DOWN);
+        KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_JOY_0_TRIGGER);
+        
         KeyTranslator.addTranslation("ATR_RESET", SDLKeysym.SDLK_F5);
         KeyTranslator.addTranslation("ATR_OPTION", SDLKeysym.SDLK_F2);
         KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
         KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
-        KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
         KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
         KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
         KeyTranslator.addTranslation("ATR_RETURN", SDLKeysym.SDLK_RETURN);
         // second player
-        KeyTranslator.addTranslation("ATR_LEFT2", SDLKeysym.SDLK_KP1);
-        KeyTranslator.addTranslation("ATR_RIGHT2", SDLKeysym.SDLK_KP3);
-        KeyTranslator.addTranslation("ATR_UP2", SDLKeysym.SDLK_KP7);
-        KeyTranslator.addTranslation("ATR_DOWN2", SDLKeysym.SDLK_KP9);
-        KeyTranslator.addTranslation("ATR_TRIGGER2", SDLKeysym.SDLK_LCTRL);
+        KeyTranslator.addTranslation("ATR_LEFT2",    SDLKeysym.SDLK_JOY_1_LEFT);
+        KeyTranslator.addTranslation("ATR_RIGHT2",   SDLKeysym.SDLK_JOY_1_RIGHT);
+        KeyTranslator.addTranslation("ATR_UP2",      SDLKeysym.SDLK_JOY_1_UP);
+        KeyTranslator.addTranslation("ATR_DOWN2",    SDLKeysym.SDLK_JOY_1_DOWN);
+        KeyTranslator.addTranslation("ATR_TRIGGER2", SDLKeysym.SDLK_JOY_1_TRIGGER);
         
         // haremos esto mejor en otra vida
         for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {

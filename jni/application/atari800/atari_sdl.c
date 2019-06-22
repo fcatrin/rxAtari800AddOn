@@ -112,11 +112,11 @@ int PLATFORM_kbd_joy_0_enabled = TRUE;	/* enabled by default, doesn't hurt */
 int PLATFORM_kbd_joy_1_enabled = TRUE;	/* disabled, would steal normal keys */
 
 #ifdef ANDROID
-static int KBD_TRIG_0 = SDLK_KP_PERIOD;
-static int KBD_STICK_0_LEFT = SDLK_KP4;
-static int KBD_STICK_0_RIGHT = SDLK_KP6;
-static int KBD_STICK_0_DOWN = SDLK_KP5;
-static int KBD_STICK_0_UP = SDLK_KP8;
+static int KBD_TRIG_0        = SDLK_JOY_0_TRIGGER;
+static int KBD_STICK_0_LEFT  = SDLK_JOY_0_LEFT;
+static int KBD_STICK_0_RIGHT = SDLK_JOY_0_RIGHT;
+static int KBD_STICK_0_DOWN  = SDLK_JOY_0_DOWN;
+static int KBD_STICK_0_UP    = SDLK_JOY_0_UP;
 #else
 static int KBD_TRIG_0 = SDLK_RCTRL;
 static int KBD_STICK_0_LEFT = SDLK_KP4;
@@ -124,11 +124,11 @@ static int KBD_STICK_0_RIGHT = SDLK_KP6;
 static int KBD_STICK_0_DOWN = SDLK_KP5;
 static int KBD_STICK_0_UP = SDLK_KP8;
 #endif
-static int KBD_TRIG_1 = SDLK_LCTRL;
-static int KBD_STICK_1_LEFT = SDLK_KP1;
-static int KBD_STICK_1_RIGHT = SDLK_KP3;
-static int KBD_STICK_1_DOWN = SDLK_KP9;
-static int KBD_STICK_1_UP = SDLK_KP7;
+static int KBD_TRIG_1        = SDLK_JOY_1_TRIGGER;
+static int KBD_STICK_1_LEFT  = SDLK_JOY_1_LEFT;
+static int KBD_STICK_1_RIGHT = SDLK_JOY_1_RIGHT;
+static int KBD_STICK_1_DOWN  = SDLK_JOY_1_DOWN;
+static int KBD_STICK_1_UP    = SDLK_JOY_1_UP;
 
 /* real joysticks */
 
