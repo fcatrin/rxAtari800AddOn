@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -168,6 +169,7 @@ public class MainActivity extends Activity {
 	private VirtualInputDispatcher vinputDispatcher;
 	private String stateDir;
 	private String stateName;
+	private CustomKeyboard customKeyboard;
     
 	
 	@Override
@@ -450,6 +452,7 @@ public class MainActivity extends Activity {
 	        }
 	    });
         
+		customKeyboard = new CustomKeyboard(this);
 	}
 
 	public void initSDL(boolean landscapeMode, boolean useGamepad)
@@ -609,6 +612,8 @@ public class MainActivity extends Activity {
         
         getLayoutInflater().inflate(R.layout.modal_dialog_list, al);
         AndroidFonts.setViewFont(findViewById(R.id.txtDialogListTitle), RetroBoxUtils.FONT_DEFAULT_M);
+        
+        getLayoutInflater().inflate(R.layout.virtual_keyboard, al);
         
 //        _buttonPanel.showPanel();
 
@@ -1065,6 +1070,11 @@ public class MainActivity extends Activity {
 		Log.d("MENU", "on Back pressed");
 		if (RetroBoxDialog.cancelDialog(this)) return;
 		
+		if (customKeyboard.isVisible()) {
+			uiHideKeyboard();
+			return;
+		}
+		
 		Log.d("MENU", "openRetroBoxMenu");
 		openRetroBoxMenu(true);
 	}
@@ -1151,6 +1161,8 @@ public class MainActivity extends Activity {
         if (OverlayExtra.hasExtraButtons()) {
             options.add(new ListOption("extra", getString(R.string.emu_opt_extra_buttons)));
         }
+        
+        options.add(new ListOption("keyb", "Show Keyboard"));
         	
         options.add(new ListOption("help", getString(R.string.emu_opt_help)));
         options.add(new ListOption("quit", getString(R.string.emu_opt_quit)));
@@ -1171,6 +1183,8 @@ public class MainActivity extends Activity {
 					return;
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
+				} else if (key.equals("keyb")) {
+					uiShowKeyboard();
 				} else if (key.equals("help")) {
 					uiHelp();
 					return;
@@ -1187,6 +1201,20 @@ public class MainActivity extends Activity {
 				onResume();
 			}
 		});
+	}
+	
+	private void uiShowKeyboard() {
+		if (!Mapper.hasGamepads()) {
+			gamepadView.setVisibility(View.GONE);
+		}
+		customKeyboard.open();
+	}
+	
+	private void uiHideKeyboard() {
+		customKeyboard.close();
+		if (!Mapper.hasGamepads()) {
+			gamepadView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	protected void uiToggleButtons() {
