@@ -1141,7 +1141,6 @@ public class MainActivity extends Activity {
         options.add(new ListOption("keyboard", "Open Keyboard"));
         options.add(new ListOption("keymap", "Assign gamepad buttons"));
         	
-        options.add(new ListOption("help", getString(R.string.emu_opt_help)));
         options.add(new ListOption("quit", getString(R.string.emu_opt_quit)));
         
         RetroBoxDialog.showListDialog(this, getString(R.string.emu_opt_title), options, new Callback<KeyValue>() {
@@ -1164,9 +1163,6 @@ public class MainActivity extends Activity {
 					uiShowKeyboard();
 				} else if (key.equals("keymap")) {
 					uiOpenKeyMapper();
-					return;
-				} else if (key.equals("help")) {
-					uiHelp();
 					return;
 				} else if (key.equals("mount")) {
 					uiChangeDisk();
