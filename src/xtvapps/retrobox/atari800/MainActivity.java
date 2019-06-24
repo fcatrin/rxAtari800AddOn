@@ -43,6 +43,10 @@ import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
 import android.widget.Toast;
 import retrobox.content.SaveStateInfo;
+import retrobox.keyboard.KeyboardLayout;
+import retrobox.keyboard.KeyboardMappingUtils;
+import retrobox.keyboard.layouts.Atari800KeyboardLayout;
+import retrobox.keyboard.layouts.PCKeyboardLayout;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
@@ -269,40 +273,7 @@ public class MainActivity extends Activity {
         }
         
         KeyTranslator.init();
-        KeyTranslator.addTranslation("ATR_KEY_LEFT", SDLKeysym.SDLK_LEFT);
-        KeyTranslator.addTranslation("ATR_KEY_RIGHT", SDLKeysym.SDLK_RIGHT);
-        KeyTranslator.addTranslation("ATR_KEY_UP", SDLKeysym.SDLK_UP);
-        KeyTranslator.addTranslation("ATR_KEY_DOWN", SDLKeysym.SDLK_DOWN);
-
-        KeyTranslator.addTranslation("ATR_LEFT",    SDLKeysym.SDLK_JOY_0_LEFT);
-        KeyTranslator.addTranslation("ATR_RIGHT",   SDLKeysym.SDLK_JOY_0_RIGHT);
-        KeyTranslator.addTranslation("ATR_UP",      SDLKeysym.SDLK_JOY_0_UP);
-        KeyTranslator.addTranslation("ATR_DOWN",    SDLKeysym.SDLK_JOY_0_DOWN);
-        KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_JOY_0_TRIGGER);
-        
-        KeyTranslator.addTranslation("ATR_RESET", SDLKeysym.SDLK_F5);
-        KeyTranslator.addTranslation("ATR_OPTION", SDLKeysym.SDLK_F2);
-        KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
-        KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
-        KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
-        KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
-        KeyTranslator.addTranslation("ATR_RETURN", SDLKeysym.SDLK_RETURN);
-        // second player
-        KeyTranslator.addTranslation("ATR_LEFT2",    SDLKeysym.SDLK_JOY_1_LEFT);
-        KeyTranslator.addTranslation("ATR_RIGHT2",   SDLKeysym.SDLK_JOY_1_RIGHT);
-        KeyTranslator.addTranslation("ATR_UP2",      SDLKeysym.SDLK_JOY_1_UP);
-        KeyTranslator.addTranslation("ATR_DOWN2",    SDLKeysym.SDLK_JOY_1_DOWN);
-        KeyTranslator.addTranslation("ATR_TRIGGER2", SDLKeysym.SDLK_JOY_1_TRIGGER);
-        
-        // haremos esto mejor en otra vida
-        for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {
-        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
-        	KeyTranslator.addTranslation(atariKey, i);
-        }
-        for(int i=SDLKeysym.SDLK_0; i<=SDLKeysym.SDLK_9; i++) {
-        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
-        	KeyTranslator.addTranslation(atariKey, i);
-        }
+        CustomKeyboard.initKeyMap();
                 
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
@@ -1074,6 +1045,11 @@ public class MainActivity extends Activity {
 			uiHideKeyboard();
 			return;
 		}
+
+		if (KeyboardMappingUtils.isKeyMapperVisible()) {
+			KeyboardMappingUtils.closeKeyMapper();
+			return;
+		}
 		
 		Log.d("MENU", "openRetroBoxMenu");
 		openRetroBoxMenu(true);
@@ -1162,7 +1138,8 @@ public class MainActivity extends Activity {
             options.add(new ListOption("extra", getString(R.string.emu_opt_extra_buttons)));
         }
         
-        options.add(new ListOption("keyb", "Show Keyboard"));
+        options.add(new ListOption("keyboard", "Open Keyboard"));
+        options.add(new ListOption("keymap", "Assign gamepad buttons"));
         	
         options.add(new ListOption("help", getString(R.string.emu_opt_help)));
         options.add(new ListOption("quit", getString(R.string.emu_opt_quit)));
@@ -1183,8 +1160,10 @@ public class MainActivity extends Activity {
 					return;
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
-				} else if (key.equals("keyb")) {
+				} else if (key.equals("keyboard")) {
 					uiShowKeyboard();
+				} else if (key.equals("keymap")) {
+					uiOpenKeyMapper();
 				} else if (key.equals("help")) {
 					uiHelp();
 					return;
@@ -1201,6 +1180,18 @@ public class MainActivity extends Activity {
 				onResume();
 			}
 		});
+	}
+	
+	private void uiOpenKeyMapper() {
+		SimpleCallback returnHereCallback = new SimpleCallback() {
+			@Override
+			public void onResult() {
+				onResume();
+			}
+		};
+		
+		KeyboardLayout[] keyboardLayout = new Atari800KeyboardLayout().getKeyboardLayout();
+		KeyboardMappingUtils.openKeymapSettings(this, keyboardLayout, returnHereCallback);
 	}
 	
 	private void uiShowKeyboard() {
