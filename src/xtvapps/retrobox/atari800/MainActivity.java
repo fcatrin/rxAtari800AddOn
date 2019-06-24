@@ -1164,6 +1164,7 @@ public class MainActivity extends Activity {
 					uiShowKeyboard();
 				} else if (key.equals("keymap")) {
 					uiOpenKeyMapper();
+					return;
 				} else if (key.equals("help")) {
 					uiHelp();
 					return;
@@ -1186,26 +1187,36 @@ public class MainActivity extends Activity {
 		SimpleCallback returnHereCallback = new SimpleCallback() {
 			@Override
 			public void onResult() {
+				uiShowGamepadOverlay();
 				onResume();
 			}
 		};
 		
+		uiHideGamepadOverlay();
 		KeyboardLayout[] keyboardLayout = new Atari800KeyboardLayout().getKeyboardLayout();
 		KeyboardMappingUtils.openKeymapSettings(this, keyboardLayout, returnHereCallback);
 	}
 	
-	private void uiShowKeyboard() {
+	private void uiHideGamepadOverlay() {
 		if (!Mapper.hasGamepads()) {
 			gamepadView.setVisibility(View.GONE);
 		}
+	}
+	
+	private void uiShowGamepadOverlay() {
+		if (!Mapper.hasGamepads()) {
+			gamepadView.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	private void uiShowKeyboard() {
+		uiHideGamepadOverlay();
 		customKeyboard.open();
 	}
 	
 	private void uiHideKeyboard() {
+		uiShowGamepadOverlay();
 		customKeyboard.close();
-		if (!Mapper.hasGamepads()) {
-			gamepadView.setVisibility(View.VISIBLE);
-		}
 	}
 
 	protected void uiToggleButtons() {

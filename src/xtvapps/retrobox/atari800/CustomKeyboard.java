@@ -1,13 +1,10 @@
 package xtvapps.retrobox.atari800;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.tvi910.android.core.Keymap;
 import com.tvi910.android.sdl.SDLInterface;
 import com.tvi910.android.sdl.SDLKeysym;
 
@@ -43,7 +40,6 @@ public class CustomKeyboard {
 
 			@Override
 			public void onKeyPressed(String code) {
-				if (!code.startsWith("ATR_")) code = "ATR_" + code;
 				VirtualEvent event = KeyTranslator.translate(code);
 				
 				int keyCode = event == null ? 0: event.keyCode;
