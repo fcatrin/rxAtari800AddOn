@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.tvi910.android.core.Keymap;
 import com.tvi910.android.sdl.SDLInterface;
+import com.tvi910.android.sdl.SDLKeysym;
 
 import android.app.Activity;
 import android.util.Log;
@@ -45,18 +46,9 @@ public class CustomKeyboard {
 
 			@Override
 			public void onKeyPressed(String code) {
-				VirtualEvent event = KeyTranslator.translate(code);
-				if (event==null) return;
+				int keyCode = translate(code);
 				
-				int keyCode = 0;
-				int nativeCode = Keymap.getInstance().translate(event.keyCode);
-				if (nativeCode == 0) {
-					nativeCode = translate(code); 
-				}
-				
-				if (nativeCode > 0) {
-				    keyCode = nativeCode;
-				} else {
+				if (keyCode == 0) {
 					try {
 						keyCode = autoTranslate(code);
 					} catch (UnsupportedEncodingException e) {
@@ -121,6 +113,51 @@ public class CustomKeyboard {
 	
 	private void initMap() {
 		atariMap.put("ATR_RETURN", 13);
+		atariMap.put("ATR_KEY_LEFT",  SDLKeysym.SDLK_LEFT);
+		atariMap.put("ATR_KEY_RIGHT", SDLKeysym.SDLK_RIGHT);
+		atariMap.put("ATR_KEY_UP",    SDLKeysym.SDLK_UP);
+		atariMap.put("ATR_KEY_DOWN",  SDLKeysym.SDLK_DOWN);
+
+        atariMap.put("ATR_LEFT",    SDLKeysym.SDLK_JOY_0_LEFT);
+        atariMap.put("ATR_RIGHT",   SDLKeysym.SDLK_JOY_0_RIGHT);
+        atariMap.put("ATR_UP",      SDLKeysym.SDLK_JOY_0_UP);
+        atariMap.put("ATR_DOWN",    SDLKeysym.SDLK_JOY_0_DOWN);
+        atariMap.put("ATR_TRIGGER", SDLKeysym.SDLK_JOY_0_TRIGGER);
+        
+        atariMap.put("ATR_RESET",  SDLKeysym.SDLK_F5);
+        atariMap.put("ATR_OPTION", SDLKeysym.SDLK_F2);
+        atariMap.put("ATR_SELECT", SDLKeysym.SDLK_F3);
+        atariMap.put("ATR_START",  SDLKeysym.SDLK_F4);
+        atariMap.put("ATR_HELP",   SDLKeysym.SDLK_F6);
+        atariMap.put("ATR_SPACE",  SDLKeysym.SDLK_SPACE);
+        atariMap.put("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
+        atariMap.put("ATR_RETURN", SDLKeysym.SDLK_RETURN);
+        // second player
+        atariMap.put("ATR_LEFT2",    SDLKeysym.SDLK_JOY_1_LEFT);
+        atariMap.put("ATR_RIGHT2",   SDLKeysym.SDLK_JOY_1_RIGHT);
+        atariMap.put("ATR_UP2",      SDLKeysym.SDLK_JOY_1_UP);
+        atariMap.put("ATR_DOWN2",    SDLKeysym.SDLK_JOY_1_DOWN);
+        atariMap.put("ATR_TRIGGER2", SDLKeysym.SDLK_JOY_1_TRIGGER);
+        
+        atariMap.put("ATR_ESCAPE",     SDLKeysym.SDLK_ESCAPE);
+        atariMap.put("ATR_LESS_THAN",  SDLKeysym.SDLK_LESS);
+        atariMap.put("ATR_MORE_THAN",  SDLKeysym.SDLK_GREATER);
+        atariMap.put("ATR_BACKSPACE",  SDLKeysym.SDLK_BACKSPACE);
+        atariMap.put("ATR_BREAK",      SDLKeysym.SDLK_F7);
+        atariMap.put("ATR_TAB",        SDLKeysym.SDLK_TAB);
+        atariMap.put("ATR_MINUS",      SDLKeysym.SDLK_MINUS);
+        atariMap.put("ATR_EQUALS",     SDLKeysym.SDLK_EQUALS);
+        atariMap.put("ATR_CTRL",       SDLKeysym.SDLK_LCTRL);
+        atariMap.put("ATR_SEMICOLON",  SDLKeysym.SDLK_SEMICOLON);
+        atariMap.put("ATR_PLUS",       SDLKeysym.SDLK_PLUS);
+        atariMap.put("ATR_STAR",       SDLKeysym.SDLK_ASTERISK);
+        atariMap.put("ATR_LEFTSHIFT",  SDLKeysym.SDLK_LSHIFT);
+        atariMap.put("ATR_COMMA",      SDLKeysym.SDLK_COMMA);
+        atariMap.put("ATR_DOT",        SDLKeysym.SDLK_PERIOD);
+        atariMap.put("ATR_SLASH",      SDLKeysym.SDLK_SLASH);
+        atariMap.put("ATR_RIGHTSHIFT", SDLKeysym.SDLK_RSHIFT);
+        atariMap.put("ATR_SPACE",      SDLKeysym.SDLK_SPACE);
+        
 	}
 	
 	private int translate(String code) {
