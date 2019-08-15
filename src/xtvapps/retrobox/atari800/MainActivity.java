@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -42,6 +43,10 @@ import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
 import android.widget.Toast;
 import retrobox.content.SaveStateInfo;
+import retrobox.keyboard.KeyboardLayout;
+import retrobox.keyboard.KeyboardMappingUtils;
+import retrobox.keyboard.layouts.Atari800KeyboardLayout;
+import retrobox.keyboard.layouts.PCKeyboardLayout;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
@@ -168,6 +173,7 @@ public class MainActivity extends Activity {
 	private VirtualInputDispatcher vinputDispatcher;
 	private String stateDir;
 	private String stateName;
+	private CustomKeyboard customKeyboard;
     
 	
 	@Override
@@ -267,50 +273,18 @@ public class MainActivity extends Activity {
         }
         
         KeyTranslator.init();
-        KeyTranslator.addTranslation("ATR_KEY_LEFT", SDLKeysym.SDLK_LEFT);
-        KeyTranslator.addTranslation("ATR_KEY_RIGHT", SDLKeysym.SDLK_RIGHT);
-        KeyTranslator.addTranslation("ATR_KEY_UP", SDLKeysym.SDLK_UP);
-        KeyTranslator.addTranslation("ATR_KEY_DOWN", SDLKeysym.SDLK_DOWN);
-
-        KeyTranslator.addTranslation("ATR_LEFT", SDLKeysym.SDLK_KP4);
-        KeyTranslator.addTranslation("ATR_RIGHT", SDLKeysym.SDLK_KP6);
-        KeyTranslator.addTranslation("ATR_UP", SDLKeysym.SDLK_KP8);
-        KeyTranslator.addTranslation("ATR_DOWN", SDLKeysym.SDLK_KP5);
-        KeyTranslator.addTranslation("ATR_RESET", SDLKeysym.SDLK_F5);
-        KeyTranslator.addTranslation("ATR_OPTION", SDLKeysym.SDLK_F2);
-        KeyTranslator.addTranslation("ATR_SELECT", SDLKeysym.SDLK_F3);
-        KeyTranslator.addTranslation("ATR_START", SDLKeysym.SDLK_F4);
-        KeyTranslator.addTranslation("ATR_TRIGGER", SDLKeysym.SDLK_KP_PERIOD);
-        KeyTranslator.addTranslation("ATR_SPACE", SDLKeysym.SDLK_SPACE);
-        KeyTranslator.addTranslation("ATR_ESCAPE", SDLKeysym.SDLK_ESCAPE);
-        KeyTranslator.addTranslation("ATR_RETURN", SDLKeysym.SDLK_RETURN);
-        // second player
-        KeyTranslator.addTranslation("ATR_LEFT2", SDLKeysym.SDLK_KP1);
-        KeyTranslator.addTranslation("ATR_RIGHT2", SDLKeysym.SDLK_KP3);
-        KeyTranslator.addTranslation("ATR_UP2", SDLKeysym.SDLK_KP7);
-        KeyTranslator.addTranslation("ATR_DOWN2", SDLKeysym.SDLK_KP9);
-        KeyTranslator.addTranslation("ATR_TRIGGER2", SDLKeysym.SDLK_LCTRL);
-        
-        // haremos esto mejor en otra vida
-        for(int i=SDLKeysym.SDLK_a; i<=SDLKeysym.SDLK_z; i++) {
-        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
-        	KeyTranslator.addTranslation(atariKey, i);
-        }
-        for(int i=SDLKeysym.SDLK_0; i<=SDLKeysym.SDLK_9; i++) {
-        	String atariKey = "ATR_" + new String(new byte[] {(byte)(i)}).toUpperCase();
-        	KeyTranslator.addTranslation(atariKey, i);
-        }
+        CustomKeyboard.initKeyMap();
                 
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
         Mapper.initGestureDetector(this);
         Mapper.joinPorts = getIntent().getBooleanExtra("joinPorts", false);
         
-        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_KP4) ;
-        SDLInterface.setRightKeycode(SDLKeysym.SDLK_KP6) ;
-        SDLInterface.setUpKeycode(SDLKeysym.SDLK_KP8);
-        SDLInterface.setDownKeycode(SDLKeysym.SDLK_KP2) ;
-        SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_KP_PERIOD) ;
+        SDLInterface.setLeftKeycode(SDLKeysym.SDLK_JOY_0_LEFT) ;
+        SDLInterface.setRightKeycode(SDLKeysym.SDLK_JOY_0_RIGHT) ;
+        SDLInterface.setUpKeycode(SDLKeysym.SDLK_JOY_0_UP);
+        SDLInterface.setDownKeycode(SDLKeysym.SDLK_JOY_0_DOWN) ;
+        SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_JOY_0_TRIGGER) ;
 
         extraButtonsView = new ExtraButtonsView(this);
         gamepadView = new GamepadView(this, overlay);
@@ -449,6 +423,7 @@ public class MainActivity extends Activity {
 	        }
 	    });
         
+		customKeyboard = new CustomKeyboard(this);
 	}
 
 	public void initSDL(boolean landscapeMode, boolean useGamepad)
@@ -608,6 +583,8 @@ public class MainActivity extends Activity {
         
         getLayoutInflater().inflate(R.layout.modal_dialog_list, al);
         AndroidFonts.setViewFont(findViewById(R.id.txtDialogListTitle), RetroBoxUtils.FONT_DEFAULT_M);
+        
+        getLayoutInflater().inflate(R.layout.virtual_keyboard, al);
         
 //        _buttonPanel.showPanel();
 
@@ -1064,6 +1041,16 @@ public class MainActivity extends Activity {
 		Log.d("MENU", "on Back pressed");
 		if (RetroBoxDialog.cancelDialog(this)) return;
 		
+		if (customKeyboard.isVisible()) {
+			uiHideKeyboard();
+			return;
+		}
+
+		if (KeyboardMappingUtils.isKeyMapperVisible()) {
+			KeyboardMappingUtils.closeKeyMapper();
+			return;
+		}
+		
 		Log.d("MENU", "openRetroBoxMenu");
 		openRetroBoxMenu(true);
 	}
@@ -1150,8 +1137,10 @@ public class MainActivity extends Activity {
         if (OverlayExtra.hasExtraButtons()) {
             options.add(new ListOption("extra", getString(R.string.emu_opt_extra_buttons)));
         }
+        
+        options.add(new ListOption("keyboard", getString(R.string.emu_opt_open_keyboard)));
+        options.add(new ListOption("keymap", getString(R.string.emu_opt_open_mapper)));
         	
-        options.add(new ListOption("help", getString(R.string.emu_opt_help)));
         options.add(new ListOption("quit", getString(R.string.emu_opt_quit)));
         
         RetroBoxDialog.showListDialog(this, getString(R.string.emu_opt_title), options, new Callback<KeyValue>() {
@@ -1170,8 +1159,10 @@ public class MainActivity extends Activity {
 					return;
 				} else if (key.equals("extra")) {
 					uiToggleButtons();
-				} else if (key.equals("help")) {
-					uiHelp();
+				} else if (key.equals("keyboard")) {
+					uiShowKeyboard();
+				} else if (key.equals("keymap")) {
+					uiOpenKeyMapper();
 					return;
 				} else if (key.equals("mount")) {
 					uiChangeDisk();
@@ -1186,6 +1177,42 @@ public class MainActivity extends Activity {
 				onResume();
 			}
 		});
+	}
+	
+	private void uiOpenKeyMapper() {
+		SimpleCallback returnHereCallback = new SimpleCallback() {
+			@Override
+			public void onResult() {
+				uiShowGamepadOverlay();
+				onResume();
+			}
+		};
+		
+		uiHideGamepadOverlay();
+		KeyboardLayout[] keyboardLayout = new Atari800KeyboardLayout().getKeyboardLayout();
+		KeyboardMappingUtils.openKeymapSettings(this, keyboardLayout, returnHereCallback);
+	}
+	
+	private void uiHideGamepadOverlay() {
+		if (!Mapper.hasGamepads()) {
+			gamepadView.setVisibility(View.GONE);
+		}
+	}
+	
+	private void uiShowGamepadOverlay() {
+		if (!Mapper.hasGamepads()) {
+			gamepadView.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	private void uiShowKeyboard() {
+		uiHideGamepadOverlay();
+		customKeyboard.open();
+	}
+	
+	private void uiHideKeyboard() {
+		uiShowGamepadOverlay();
+		customKeyboard.close();
 	}
 
 	protected void uiToggleButtons() {
