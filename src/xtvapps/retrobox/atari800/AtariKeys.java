@@ -32,22 +32,24 @@ public class AtariKeys extends ConsoleKeys {
         _codeMap.put(SDLKeysym.SDLK_F5, "RESET");
         _codeMap.put(SDLKeysym.SDLK_F2, "OPTION");
         _codeMap.put(SDLKeysym.SDLK_F3, "SELECT");
-        _codeMap.put(SDLKeysym.SDLK_KP8, "UP");
-        _codeMap.put(SDLKeysym.SDLK_KP5, "DOWN");
-        _codeMap.put(SDLKeysym.SDLK_KP4, "LEFT");
-        _codeMap.put(SDLKeysym.SDLK_KP6, "RIGHT");
-        _codeMap.put(SDLKeysym.SDLK_KP_PERIOD, "TRIGGER");
+        
+        _codeMap.put(SDLKeysym.SDLK_JOY_0_UP,      "UP");
+        _codeMap.put(SDLKeysym.SDLK_JOY_0_DOWN,    "DOWN");
+        _codeMap.put(SDLKeysym.SDLK_JOY_0_LEFT,    "LEFT");
+        _codeMap.put(SDLKeysym.SDLK_JOY_0_RIGHT,   "RIGHT");
+        _codeMap.put(SDLKeysym.SDLK_JOY_0_TRIGGER, "TRIGGER");
+        
         _codeMap.put(SDLKeysym.SDLK_ESCAPE, "ESCAPE");
         _codeMap.put(SDLKeysym.SDLK_F1, "F1");
         _codeMap.put(SDLKeysym.SDLK_F14, "LOAD_STATE");
         _codeMap.put(SDLKeysym.SDLK_F15, "SAVE_STATE");
         
         // second joystick
-        _codeMap.put(SDLKeysym.SDLK_KP7, "UP2");
-        _codeMap.put(SDLKeysym.SDLK_KP9, "DOWN2");
-        _codeMap.put(SDLKeysym.SDLK_KP1, "LEFT2");
-        _codeMap.put(SDLKeysym.SDLK_KP3, "RIGHT3");
-        _codeMap.put(SDLKeysym.SDLK_LCTRL, "TRIGGER2");
+        _codeMap.put(SDLKeysym.SDLK_JOY_1_UP,      "UP2");
+        _codeMap.put(SDLKeysym.SDLK_JOY_1_DOWN,    "DOWN2");
+        _codeMap.put(SDLKeysym.SDLK_JOY_1_LEFT,    "LEFT2");
+        _codeMap.put(SDLKeysym.SDLK_JOY_1_RIGHT,   "RIGHT3");
+        _codeMap.put(SDLKeysym.SDLK_JOY_1_TRIGGER, "TRIGGER2");
         
         // enough for bounty bob
 //        _codeMap.put(SDLKeysym.SDLK_1, "1");
