@@ -56,8 +56,8 @@ import retrobox.utils.SaveStateSelectorAdapter;
 import retrobox.vinput.AnalogGamepad;
 import retrobox.vinput.AnalogGamepad.Axis;
 import retrobox.vinput.AnalogGamepadListener;
-import retrobox.vinput.GenericGamepad;
-import retrobox.vinput.GenericGamepad.Analog;
+import retrobox.vinput.GamepadDevice;
+import retrobox.vinput.GamepadMapping.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
@@ -68,8 +68,8 @@ import retrobox.vinput.VirtualEventDispatcher;
 import retrobox.vinput.overlay.ExtraButtons;
 import retrobox.vinput.overlay.ExtraButtonsController;
 import retrobox.vinput.overlay.ExtraButtonsView;
-import retrobox.vinput.overlay.GamepadController;
-import retrobox.vinput.overlay.GamepadView;
+import retrobox.vinput.overlay.OverlayGamepadController;
+import retrobox.vinput.overlay.OverlayGamepadView;
 import retrobox.vinput.overlay.Overlay;
 import retrobox.vinput.overlay.OverlayExtra;
 import xtvapps.core.AndroidFonts;
@@ -214,12 +214,6 @@ public class MainActivity extends Activity {
         boolean keepAspect = intent.getBooleanExtra("keepAspect", true);
         boolean stereo = intent.getBooleanExtra("stereo", false);
         
-        for(int i=0; i<2; i++) {
-        	String prefix = "j" + (i+1);
-        	String deviceDescriptor = intent.getStringExtra(prefix + "DESCRIPTOR");
-        	Mapper.registerGamepad(i, deviceDescriptor);
-        }
-        
         disks.clear();
         for(int i=1; i<=8; i++) {
         	String disk = intent.getStringExtra("disk" + i);
@@ -287,7 +281,7 @@ public class MainActivity extends Activity {
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_JOY_0_TRIGGER) ;
 
         extraButtonsView = new ExtraButtonsView(this);
-        gamepadView = new GamepadView(this, overlay);
+        overlayGamepadView = new OverlayGamepadView(this, overlay);
         
     	analogGamepad = new AnalogGamepad(0, 0, new AnalogGamepadListener() {
 			
@@ -298,25 +292,25 @@ public class MainActivity extends Activity {
 			public void onMouseMove(int mousex, int mousey) {}
 			
 			@Override
-			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty, float raxisx, float raxisy) {
+			public void onAxisChange(GamepadDevice gamepad, float axisx, float axisy, float hatx, float haty, float raxisx, float raxisy) {
 				vinputDispatcher.sendAnalog(gamepad, Analog.LEFT, axisx, axisy, hatx, haty);
 			}
 			
 			@Override
-			public void onTriggers(String deviceDescriptor, int deviceId, boolean left, boolean right) {
-				mapper.handleTriggerEvent(deviceDescriptor, deviceId, left, right); 
+			public void onTriggers(String deviceName, int deviceId, boolean left, boolean right) {
+				mapper.handleTriggerEventByDeviceName(deviceName, deviceId, left, right); 
 			}
 
 			@Override
-			public void onDigitalX(GenericGamepad gamepad, Axis axis, boolean on) {
+			public void onDigitalX(GamepadDevice gamepad, Axis axis, boolean on) {
 			}
 
 			@Override
-			public void onDigitalY(GenericGamepad gamepad, Axis axis, boolean on) {
+			public void onDigitalY(GamepadDevice gamepad, Axis axis, boolean on) {
 			}
 
 			@Override
-			public void onTriggersAnalog(GenericGamepad gamepad, int deviceId, float left, float right) {}
+			public void onTriggersAnalog(GamepadDevice gamepad, int deviceId, float left, float right) {}
 
 		});
 
@@ -574,7 +568,7 @@ public class MainActivity extends Activity {
         al.addView(mGLView);
         
         if (!useGamepad)  {
-            gamepadView.addToLayout((ViewGroup)al);
+            overlayGamepadView.addToLayout((ViewGroup)al);
         }
 
         // _buttonPanel.addToLayout((ViewGroup)al);
@@ -619,7 +613,7 @@ public class MainActivity extends Activity {
         //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         //_nullController = new NullController(this);
         extraButtonsController = new ExtraButtonsControllerWrapper(this, new ExtraButtonsController(), extraButtonsView);
-        gamepadController = new GamepadControllerWrapper(this, new GamepadController(), gamepadView);
+        gamepadController = new OverlayGamepadControllerWrapper(this, new OverlayGamepadController(), overlayGamepadView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
@@ -902,7 +896,7 @@ public class MainActivity extends Activity {
         	if (gamepadController.getIsActive() && gamepadController.onTouchEvent(ev)) {
         		if (Overlay.requiresRedraw) {
             		Overlay.requiresRedraw = false;
-        			gamepadView.invalidate();
+        			overlayGamepadView.invalidate();
         		}
         		return true;
         	}
@@ -1015,7 +1009,7 @@ public class MainActivity extends Activity {
     //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
     private ExtraButtonsControllerWrapper extraButtonsController = null;
-    private GamepadControllerWrapper gamepadController = null;
+    private OverlayGamepadControllerWrapper gamepadController = null;
 
 
 	private SDLSurfaceView mGLView = null;
@@ -1025,7 +1019,7 @@ public class MainActivity extends Activity {
 	private boolean sdlInited = false;
     private ButtonPanel _buttonPanel;
     private ExtraButtonsView extraButtonsView;
-    private GamepadView gamepadView;
+    private OverlayGamepadView overlayGamepadView;
     private Keymap _keymap = null;
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
@@ -1195,13 +1189,13 @@ public class MainActivity extends Activity {
 	
 	private void uiHideGamepadOverlay() {
 		if (!Mapper.hasGamepads()) {
-			gamepadView.setVisibility(View.GONE);
+			overlayGamepadView.setVisibility(View.GONE);
 		}
 	}
 	
 	private void uiShowGamepadOverlay() {
 		if (!Mapper.hasGamepads()) {
-			gamepadView.setVisibility(View.VISIBLE);
+			overlayGamepadView.setVisibility(View.VISIBLE);
 		}
 	}
 	
@@ -1269,7 +1263,7 @@ public class MainActivity extends Activity {
     	private float THRESHOLD = 0.2f;
 
 		@Override
-		public void sendKey(GenericGamepad gamepad, int keyCode, boolean down) {
+		public void sendKey(GamepadDevice gamepad, int keyCode, boolean down) {
 			Log.d("KEY", "sendKey " + keyCode + " down:" + down);
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
@@ -1278,7 +1272,7 @@ public class MainActivity extends Activity {
 		public void sendMouseButton(MouseButton button, boolean down) {}
 
 		@Override
-		public void sendAnalog(GenericGamepad gamepad, Analog index, double x, double y, double hatx, double haty) {
+		public void sendAnalog(GamepadDevice gamepad, Analog index, double x, double y, double hatx, double haty) {
 			double dx = hatx!=0?hatx:x;
 			double dy = haty!=0?haty:y;
 			

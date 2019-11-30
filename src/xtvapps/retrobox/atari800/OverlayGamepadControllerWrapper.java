@@ -1,18 +1,18 @@
 package xtvapps.retrobox.atari800;
 
-import retrobox.vinput.overlay.GamepadController;
-import retrobox.vinput.overlay.GamepadView;
+import retrobox.vinput.overlay.OverlayGamepadController;
+import retrobox.vinput.overlay.OverlayGamepadView;
 import android.content.Context;
 import android.view.MotionEvent;
 
 import com.tvi910.android.core.VirtualController;
 
-public class GamepadControllerWrapper extends VirtualController {
+public class OverlayGamepadControllerWrapper extends VirtualController {
 
-	GamepadView view;
-	GamepadController controller;
+	OverlayGamepadView view;
+	OverlayGamepadController controller;
 	
-	protected GamepadControllerWrapper(Context context, GamepadController controller, GamepadView view) {
+	protected OverlayGamepadControllerWrapper(Context context, OverlayGamepadController controller, OverlayGamepadView view) {
 		super(context);
 		this.view = view;
 		this.controller = controller;
