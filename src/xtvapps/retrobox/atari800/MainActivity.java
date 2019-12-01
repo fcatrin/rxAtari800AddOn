@@ -750,17 +750,24 @@ public class MainActivity extends Activity {
 		SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F10);
 	}
 	
-	
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if (!RetroBoxDialog.isDialogVisible(this)) {
+			int keyCode     = event.getKeyCode();
+			boolean isDown  = event.getAction() == KeyEvent.ACTION_DOWN;
+			if (mapper.handleKeyEvent(event, keyCode, isDown)) return true;
+		}
+
+		return super.dispatchKeyEvent(event);
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 
 		if (RetroBoxDialog.isDialogVisible(this)) {
 			return RetroBoxDialog.onKeyDown(this, keyCode, event);
 		}
-		Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
 		
-		if (mapper.handleKeyEvent(event, keyCode, true)) return true;
-
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -827,10 +834,6 @@ public class MainActivity extends Activity {
 		if (RetroBoxDialog.isDialogVisible(this)) {
 			return RetroBoxDialog.onKeyUp(this, keyCode, event);
 		}
-		
-		Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
-
-		if (mapper.handleKeyEvent(event, keyCode, false)) return true;
 		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			onBackPressed();
