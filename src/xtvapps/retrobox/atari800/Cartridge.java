@@ -1,7 +1,5 @@
 package xtvapps.retrobox.atari800;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,10 +7,10 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-
 import java.security.MessageDigest;
-
 import java.util.HashMap;
+
+import android.util.Log;
 
 /**
  * This class attempts to make cart file from a rom

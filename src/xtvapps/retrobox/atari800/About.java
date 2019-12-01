@@ -1,11 +1,8 @@
 package xtvapps.retrobox.atari800;
 
 import android.app.Activity;
-
 import android.os.Bundle;
-
 import android.text.method.LinkMovementMethod;
-
 import android.widget.TextView;
 import xtvapps.retrobox.v2.atari800.R;
 
