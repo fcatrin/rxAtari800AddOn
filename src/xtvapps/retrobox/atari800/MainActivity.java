@@ -220,8 +220,6 @@ public class MainActivity extends Activity {
         	if (disk!=null) disks.add(disk);
         }
         
-        boolean useGamepad = Mapper.hasGamepads();
-        
         if (stateDir!=null) new File(stateDir).mkdirs();
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -399,7 +397,7 @@ public class MainActivity extends Activity {
 		boolean isInvertedRGB = getIntent().getBooleanExtra("invertRGB", false);
 		DemoRenderer.nativeSetInvertRGB(isInvertedRGB);
 		
-        initSDL(landscapeMode, useGamepad);
+        initSDL(landscapeMode);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         
         ViewTreeObserver observer = mGLView.getViewTreeObserver();
@@ -419,7 +417,7 @@ public class MainActivity extends Activity {
 		customKeyboard = new CustomKeyboard(this);
 	}
 
-	public void initSDL(boolean landscapeMode, boolean useGamepad)
+	public void initSDL(boolean landscapeMode)
 	{
 		if(sdlInited)
 			return;
@@ -566,7 +564,7 @@ public class MainActivity extends Activity {
         mGLView = new SDLSurfaceView(this, arglist);
         al.addView(mGLView);
         
-        if (!useGamepad)  {
+        if (Mapper.mustDisplayOverlayControllers())  {
             overlayGamepadView.addToLayout((ViewGroup)al);
         }
 
@@ -588,7 +586,7 @@ public class MainActivity extends Activity {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Droid800 - do not dim screen");
 
-		if (!useGamepad)  {
+		if (Mapper.mustDisplayOverlayControllers())  {
 			_virtualControllerManager.setActiveController("Gamepad");
 		}
 		
@@ -1181,25 +1179,25 @@ public class MainActivity extends Activity {
 			}
 		};
 		
-		uiHideGamepadOverlay();
+		uiHideGamepadOverlay(false);
 		KeyboardLayout[] keyboardLayout = new Atari800KeyboardLayout().getKeyboardLayout();
 		KeyboardMappingUtils.openKeymapSettings(this, keyboardLayout, returnHereCallback);
 	}
 	
-	private void uiHideGamepadOverlay() {
-		if (!Mapper.hasGamepads()) {
+	private void uiHideGamepadOverlay(boolean force) {
+		if (Mapper.mustDisplayOverlayControllers() || force) {
 			overlayGamepadView.setVisibility(View.GONE);
 		}
 	}
 	
 	private void uiShowGamepadOverlay() {
-		if (!Mapper.hasGamepads()) {
+		if (Mapper.mustDisplayOverlayControllers()) {
 			overlayGamepadView.setVisibility(View.VISIBLE);
 		}
 	}
 	
 	private void uiShowKeyboard() {
-		uiHideGamepadOverlay();
+		uiHideGamepadOverlay(false);
 		customKeyboard.open();
 	}
 	
