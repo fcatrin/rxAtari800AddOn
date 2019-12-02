@@ -41,6 +41,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import retrobox.content.SaveStateInfo;
 import retrobox.keyboard.KeyboardLayout;
@@ -752,7 +753,11 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		if (!RetroBoxDialog.isDialogVisible(this)) {
+
+		if (!RetroBoxDialog.isDialogVisible(this) 
+			&& !customKeyboard.isVisible()
+			&& !KeyboardMappingUtils.isKeyMapperVisible()) {
+
 			int keyCode     = event.getKeyCode();
 			boolean isDown  = event.getAction() == KeyEvent.ACTION_DOWN;
 			if (mapper.handleKeyEvent(event, keyCode, isDown)) return true;
@@ -761,13 +766,14 @@ public class MainActivity extends Activity {
 		return super.dispatchKeyEvent(event);
 	}
 
+	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 
 		if (RetroBoxDialog.isDialogVisible(this)) {
 			return RetroBoxDialog.onKeyDown(this, keyCode, event);
 		}
-		
+
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -1117,6 +1123,9 @@ public class MainActivity extends Activity {
 	private void openRetroBoxMenu(boolean pause) {
 		if (pause) onPause();
 		
+		if (customKeyboard.isVisible()) uiHideKeyboard();
+		if (KeyboardMappingUtils.isKeyMapperVisible()) KeyboardMappingUtils.closeKeyMapper();
+		
 		List<ListOption> options = new ArrayList<ListOption>();
 		
         options.add(new ListOption("", getString(R.string.emu_opt_cancel)));
@@ -1173,6 +1182,10 @@ public class MainActivity extends Activity {
 	}
 	
 	private void uiOpenKeyMapper() {
+		if (customKeyboard.isVisible()) {
+			customKeyboard.close();
+		}
+		
 		SimpleCallback returnHereCallback = new SimpleCallback() {
 			@Override
 			public void onResult() {
@@ -1249,7 +1262,9 @@ public class MainActivity extends Activity {
     
     @Override
 	public boolean onGenericMotionEvent(MotionEvent event) {
-    	if (RetroBoxDialog.isDialogVisible(this)) {
+    	if (RetroBoxDialog.isDialogVisible(this)
+    		|| customKeyboard.isVisible()
+    		|| KeyboardMappingUtils.isKeyMapperVisible()) {
     		return super.onGenericMotionEvent(event);
     	}
     	
@@ -1263,6 +1278,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void sendKey(GamepadDevice gamepad, int keyCode, boolean down) {
+			new Exception("VirtualInputDispatcher.sendKey + " + keyCode + " down:" + down).printStackTrace();
 			Log.d("KEY", "sendKey " + keyCode + " down:" + down);
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
