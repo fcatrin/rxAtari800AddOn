@@ -766,7 +766,6 @@ public class MainActivity extends Activity {
 		return super.dispatchKeyEvent(event);
 	}
 
-	
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 
