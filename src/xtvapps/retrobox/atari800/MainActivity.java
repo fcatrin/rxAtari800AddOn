@@ -1277,8 +1277,6 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void sendKey(GamepadDevice gamepad, int keyCode, boolean down) {
-			new Exception("VirtualInputDispatcher.sendKey + " + keyCode + " down:" + down).printStackTrace();
-			Log.d("KEY", "sendKey " + keyCode + " down:" + down);
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
 
