@@ -773,6 +773,11 @@ public class MainActivity extends Activity {
 			return RetroBoxDialog.onKeyDown(this, keyCode, event);
 		}
 
+		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			SDLInterface.nativeKey(SDLKeysym.SDLK_RETURN, 1);
+			return true;
+		}
+		
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -842,6 +847,11 @@ public class MainActivity extends Activity {
 		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			onBackPressed();
+			return true;
+		}
+		
+		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			SDLInterface.nativeKey(SDLKeysym.SDLK_RETURN, 0);
 			return true;
 		}
 
