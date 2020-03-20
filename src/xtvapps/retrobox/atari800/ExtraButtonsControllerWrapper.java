@@ -1,11 +1,11 @@
 package xtvapps.retrobox.atari800;
 
-import retrobox.vinput.overlay.ExtraButtonsController;
-import retrobox.vinput.overlay.ExtraButtonsView;
+import com.tvi910.android.core.VirtualController;
+
 import android.content.Context;
 import android.view.MotionEvent;
-
-import com.tvi910.android.core.VirtualController;
+import retrobox.vinput.overlay.ExtraButtonsController;
+import retrobox.vinput.overlay.ExtraButtonsView;
 
 public class ExtraButtonsControllerWrapper extends VirtualController {
 

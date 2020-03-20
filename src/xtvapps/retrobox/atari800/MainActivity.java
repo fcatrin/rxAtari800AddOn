@@ -12,11 +12,11 @@ import com.tvi910.android.core.VirtualControllerManager;
 import com.tvi910.android.core.buttonpanel.ButtonCallback;
 import com.tvi910.android.core.buttonpanel.ButtonPanel;
 import com.tvi910.android.sdl.AudioThread;
+import com.tvi910.android.sdl.DemoRenderer;
 import com.tvi910.android.sdl.LoadLibrary;
 import com.tvi910.android.sdl.SDLInterface;
 import com.tvi910.android.sdl.SDLKeysym;
 import com.tvi910.android.sdl.SDLSurfaceView;
-import com.tvi910.android.sdl.DemoRenderer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -41,12 +41,12 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import retrobox.content.SaveStateInfo;
 import retrobox.keyboard.KeyboardLayout;
 import retrobox.keyboard.KeyboardMappingUtils;
 import retrobox.keyboard.layouts.Atari800KeyboardLayout;
-import retrobox.keyboard.layouts.PCKeyboardLayout;
 import retrobox.utils.GamepadInfoDialog;
 import retrobox.utils.ImmersiveModeSetter;
 import retrobox.utils.ListOption;
@@ -56,8 +56,8 @@ import retrobox.utils.SaveStateSelectorAdapter;
 import retrobox.vinput.AnalogGamepad;
 import retrobox.vinput.AnalogGamepad.Axis;
 import retrobox.vinput.AnalogGamepadListener;
-import retrobox.vinput.GenericGamepad;
-import retrobox.vinput.GenericGamepad.Analog;
+import retrobox.vinput.GamepadDevice;
+import retrobox.vinput.GamepadMapping.Analog;
 import retrobox.vinput.KeyTranslator;
 import retrobox.vinput.Mapper;
 import retrobox.vinput.Mapper.ShortCut;
@@ -68,10 +68,10 @@ import retrobox.vinput.VirtualEventDispatcher;
 import retrobox.vinput.overlay.ExtraButtons;
 import retrobox.vinput.overlay.ExtraButtonsController;
 import retrobox.vinput.overlay.ExtraButtonsView;
-import retrobox.vinput.overlay.GamepadController;
-import retrobox.vinput.overlay.GamepadView;
 import retrobox.vinput.overlay.Overlay;
 import retrobox.vinput.overlay.OverlayExtra;
+import retrobox.vinput.overlay.OverlayGamepadController;
+import retrobox.vinput.overlay.OverlayGamepadView;
 import xtvapps.core.AndroidFonts;
 import xtvapps.core.Callback;
 import xtvapps.core.SimpleCallback;
@@ -214,19 +214,11 @@ public class MainActivity extends Activity {
         boolean keepAspect = intent.getBooleanExtra("keepAspect", true);
         boolean stereo = intent.getBooleanExtra("stereo", false);
         
-        for(int i=0; i<2; i++) {
-        	String prefix = "j" + (i+1);
-        	String deviceDescriptor = intent.getStringExtra(prefix + "DESCRIPTOR");
-        	Mapper.registerGamepad(i, deviceDescriptor);
-        }
-        
         disks.clear();
         for(int i=1; i<=8; i++) {
         	String disk = intent.getStringExtra("disk" + i);
         	if (disk!=null) disks.add(disk);
         }
-        
-        boolean useGamepad = Mapper.hasGamepads();
         
         if (stateDir!=null) new File(stateDir).mkdirs();
 		
@@ -278,7 +270,6 @@ public class MainActivity extends Activity {
         vinputDispatcher = new VirtualInputDispatcher();
         mapper = new Mapper(getIntent(), vinputDispatcher);
         Mapper.initGestureDetector(this);
-        Mapper.joinPorts = getIntent().getBooleanExtra("joinPorts", false);
         
         SDLInterface.setLeftKeycode(SDLKeysym.SDLK_JOY_0_LEFT) ;
         SDLInterface.setRightKeycode(SDLKeysym.SDLK_JOY_0_RIGHT) ;
@@ -287,7 +278,7 @@ public class MainActivity extends Activity {
         SDLInterface.setTriggerKeycode(SDLKeysym.SDLK_JOY_0_TRIGGER) ;
 
         extraButtonsView = new ExtraButtonsView(this);
-        gamepadView = new GamepadView(this, overlay);
+        overlayGamepadView = new OverlayGamepadView(this, overlay);
         
     	analogGamepad = new AnalogGamepad(0, 0, new AnalogGamepadListener() {
 			
@@ -298,25 +289,25 @@ public class MainActivity extends Activity {
 			public void onMouseMove(int mousex, int mousey) {}
 			
 			@Override
-			public void onAxisChange(GenericGamepad gamepad, float axisx, float axisy, float hatx, float haty, float raxisx, float raxisy) {
+			public void onAxisChange(GamepadDevice gamepad, float axisx, float axisy, float hatx, float haty, float raxisx, float raxisy) {
 				vinputDispatcher.sendAnalog(gamepad, Analog.LEFT, axisx, axisy, hatx, haty);
 			}
 			
 			@Override
-			public void onTriggers(String deviceDescriptor, int deviceId, boolean left, boolean right) {
-				mapper.handleTriggerEvent(deviceDescriptor, deviceId, left, right); 
+			public void onTriggers(String deviceName, int deviceId, boolean left, boolean right) {
+				mapper.handleTriggerEventByDeviceName(deviceName, deviceId, left, right); 
 			}
 
 			@Override
-			public void onDigitalX(GenericGamepad gamepad, Axis axis, boolean on) {
+			public void onDigitalX(GamepadDevice gamepad, Axis axis, boolean on) {
 			}
 
 			@Override
-			public void onDigitalY(GenericGamepad gamepad, Axis axis, boolean on) {
+			public void onDigitalY(GamepadDevice gamepad, Axis axis, boolean on) {
 			}
 
 			@Override
-			public void onTriggersAnalog(GenericGamepad gamepad, int deviceId, float left, float right) {}
+			public void onTriggersAnalog(GamepadDevice gamepad, int deviceId, float left, float right) {}
 
 		});
 
@@ -406,7 +397,7 @@ public class MainActivity extends Activity {
 		boolean isInvertedRGB = getIntent().getBooleanExtra("invertRGB", false);
 		DemoRenderer.nativeSetInvertRGB(isInvertedRGB);
 		
-        initSDL(landscapeMode, useGamepad);
+        initSDL(landscapeMode);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         
         ViewTreeObserver observer = mGLView.getViewTreeObserver();
@@ -426,7 +417,7 @@ public class MainActivity extends Activity {
 		customKeyboard = new CustomKeyboard(this);
 	}
 
-	public void initSDL(boolean landscapeMode, boolean useGamepad)
+	public void initSDL(boolean landscapeMode)
 	{
 		if(sdlInited)
 			return;
@@ -573,8 +564,8 @@ public class MainActivity extends Activity {
         mGLView = new SDLSurfaceView(this, arglist);
         al.addView(mGLView);
         
-        if (!useGamepad)  {
-            gamepadView.addToLayout((ViewGroup)al);
+        if (Mapper.mustDisplayOverlayControllers())  {
+            overlayGamepadView.addToLayout((ViewGroup)al);
         }
 
         // _buttonPanel.addToLayout((ViewGroup)al);
@@ -595,7 +586,7 @@ public class MainActivity extends Activity {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Droid800 - do not dim screen");
 
-		if (!useGamepad)  {
+		if (Mapper.mustDisplayOverlayControllers())  {
 			_virtualControllerManager.setActiveController("Gamepad");
 		}
 		
@@ -619,7 +610,7 @@ public class MainActivity extends Activity {
         //_buttonPanelController = new ButtonPanelController(this, _buttonPanel);
         //_nullController = new NullController(this);
         extraButtonsController = new ExtraButtonsControllerWrapper(this, new ExtraButtonsController(), extraButtonsView);
-        gamepadController = new GamepadControllerWrapper(this, new GamepadController(), gamepadView);
+        gamepadController = new OverlayGamepadControllerWrapper(this, new OverlayGamepadController(), overlayGamepadView);
 
         int keyboardAlpha = PreferenceManager.getDefaultSharedPreferences(
             this.getApplicationContext()).getInt("keyboardAlpha", 192);
@@ -760,17 +751,33 @@ public class MainActivity extends Activity {
 		SDLInterface.nativeKeyCycle(SDLKeysym.SDLK_F10);
 	}
 	
-	
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+
+		if (!RetroBoxDialog.isDialogVisible(this) 
+			&& !customKeyboard.isVisible()
+			&& !KeyboardMappingUtils.isKeyMapperVisible()) {
+
+			int keyCode     = event.getKeyCode();
+			boolean isDown  = event.getAction() == KeyEvent.ACTION_DOWN;
+			if (mapper.handleKeyEvent(this, event, keyCode, isDown)) return true;
+		}
+
+		return super.dispatchKeyEvent(event);
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, final KeyEvent event) {
 
 		if (RetroBoxDialog.isDialogVisible(this)) {
 			return RetroBoxDialog.onKeyDown(this, keyCode, event);
 		}
-		Log.v("com.droid800.MainActivity", "DOWN keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
-		
-		if (mapper.handleKeyEvent(event, keyCode, true)) return true;
 
+		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			SDLInterface.nativeKey(SDLKeysym.SDLK_RETURN, 1);
+			return true;
+		}
+		
          final int nativeCode = _keymap.translate(keyCode);
          
          if (nativeCode == SDLKeysym.SDLK_F14) {
@@ -838,12 +845,13 @@ public class MainActivity extends Activity {
 			return RetroBoxDialog.onKeyUp(this, keyCode, event);
 		}
 		
-		Log.v("com.droid800.MainActivity", "UP keyCode: " + keyCode + ", getUnicodeCHar=" + event.getUnicodeChar());
-
-		if (mapper.handleKeyEvent(event, keyCode, false)) return true;
-		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			onBackPressed();
+			return true;
+		}
+		
+		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			SDLInterface.nativeKey(SDLKeysym.SDLK_RETURN, 0);
 			return true;
 		}
 
@@ -902,7 +910,7 @@ public class MainActivity extends Activity {
         	if (gamepadController.getIsActive() && gamepadController.onTouchEvent(ev)) {
         		if (Overlay.requiresRedraw) {
             		Overlay.requiresRedraw = false;
-        			gamepadView.invalidate();
+        			overlayGamepadView.invalidate();
         		}
         		return true;
         	}
@@ -1015,7 +1023,7 @@ public class MainActivity extends Activity {
     //private KeyboardOverlay _keyboardOverlay;
     private VirtualControllerManager _virtualControllerManager = null;
     private ExtraButtonsControllerWrapper extraButtonsController = null;
-    private GamepadControllerWrapper gamepadController = null;
+    private OverlayGamepadControllerWrapper gamepadController = null;
 
 
 	private SDLSurfaceView mGLView = null;
@@ -1025,7 +1033,7 @@ public class MainActivity extends Activity {
 	private boolean sdlInited = false;
     private ButtonPanel _buttonPanel;
     private ExtraButtonsView extraButtonsView;
-    private GamepadView gamepadView;
+    private OverlayGamepadView overlayGamepadView;
     private Keymap _keymap = null;
     private int _lastCharDown = 0;
     private boolean _lowerMode = false;
@@ -1124,6 +1132,9 @@ public class MainActivity extends Activity {
 	private void openRetroBoxMenu(boolean pause) {
 		if (pause) onPause();
 		
+		if (customKeyboard.isVisible()) uiHideKeyboard();
+		if (KeyboardMappingUtils.isKeyMapperVisible()) KeyboardMappingUtils.closeKeyMapper();
+		
 		List<ListOption> options = new ArrayList<ListOption>();
 		
         options.add(new ListOption("", getString(R.string.emu_opt_cancel)));
@@ -1180,6 +1191,10 @@ public class MainActivity extends Activity {
 	}
 	
 	private void uiOpenKeyMapper() {
+		if (customKeyboard.isVisible()) {
+			customKeyboard.close();
+		}
+		
 		SimpleCallback returnHereCallback = new SimpleCallback() {
 			@Override
 			public void onResult() {
@@ -1188,25 +1203,25 @@ public class MainActivity extends Activity {
 			}
 		};
 		
-		uiHideGamepadOverlay();
+		uiHideGamepadOverlay(false);
 		KeyboardLayout[] keyboardLayout = new Atari800KeyboardLayout().getKeyboardLayout();
 		KeyboardMappingUtils.openKeymapSettings(this, keyboardLayout, returnHereCallback);
 	}
 	
-	private void uiHideGamepadOverlay() {
-		if (!Mapper.hasGamepads()) {
-			gamepadView.setVisibility(View.GONE);
+	private void uiHideGamepadOverlay(boolean force) {
+		if (Mapper.mustDisplayOverlayControllers() || force) {
+			overlayGamepadView.setVisibility(View.GONE);
 		}
 	}
 	
 	private void uiShowGamepadOverlay() {
-		if (!Mapper.hasGamepads()) {
-			gamepadView.setVisibility(View.VISIBLE);
+		if (Mapper.mustDisplayOverlayControllers()) {
+			overlayGamepadView.setVisibility(View.VISIBLE);
 		}
 	}
 	
 	private void uiShowKeyboard() {
-		uiHideGamepadOverlay();
+		uiHideGamepadOverlay(false);
 		customKeyboard.open();
 	}
 	
@@ -1233,7 +1248,7 @@ public class MainActivity extends Activity {
     }
     
     protected void uiHelp() {
-		RetroBoxDialog.showGamepadDialogIngame(this, gamepadInfoDialog, new SimpleCallback() {
+		RetroBoxDialog.showGamepadDialogIngame(this, gamepadInfoDialog, Mapper.hasGamepads(), new SimpleCallback() {
 			@Override
 			public void onResult() {
 				onResume();
@@ -1256,7 +1271,9 @@ public class MainActivity extends Activity {
     
     @Override
 	public boolean onGenericMotionEvent(MotionEvent event) {
-    	if (RetroBoxDialog.isDialogVisible(this)) {
+    	if (RetroBoxDialog.isDialogVisible(this)
+    		|| customKeyboard.isVisible()
+    		|| KeyboardMappingUtils.isKeyMapperVisible()) {
     		return super.onGenericMotionEvent(event);
     	}
     	
@@ -1269,8 +1286,7 @@ public class MainActivity extends Activity {
     	private float THRESHOLD = 0.2f;
 
 		@Override
-		public void sendKey(GenericGamepad gamepad, int keyCode, boolean down) {
-			Log.d("KEY", "sendKey " + keyCode + " down:" + down);
+		public void sendKey(GamepadDevice gamepad, int keyCode, boolean down) {
 			SDLInterface.nativeKey(keyCode, down?1:0);
 		}
 
@@ -1278,7 +1294,7 @@ public class MainActivity extends Activity {
 		public void sendMouseButton(MouseButton button, boolean down) {}
 
 		@Override
-		public void sendAnalog(GenericGamepad gamepad, Analog index, double x, double y, double hatx, double haty) {
+		public void sendAnalog(GamepadDevice gamepad, Analog index, double x, double y, double hatx, double haty) {
 			double dx = hatx!=0?hatx:x;
 			double dy = haty!=0?haty:y;
 			

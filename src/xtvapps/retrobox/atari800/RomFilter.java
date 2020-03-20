@@ -1,10 +1,9 @@
 package xtvapps.retrobox.atari800;
 
-import com.tvi910.android.core.AndroidFileBrowser;
-
 import java.io.File;
-
 import java.util.HashSet;
+
+import com.tvi910.android.core.AndroidFileBrowser;
 
 public class RomFilter implements AndroidFileBrowser.Filter {
 
