@@ -8,6 +8,11 @@ android {
         applicationId "xtvapps.retrobox.v2.atari800"
         minSdkVersion 15
         targetSdkVersion 21
+
+        ndk {
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        }
+
     }
 
     buildTypes {
@@ -16,9 +21,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    externalNativeBuild {
+        ndkBuild {
+            path file('src/main/jni/Android.mk')
+        }
+    }
 }
 
 dependencies {
+    implementation project(':xtvApps')
     implementation project(':retroXUtils')
     implementation project(':rxAtari800DroidSDL')
 }
