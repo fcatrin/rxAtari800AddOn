@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOTE: versionName will have a minor number if this is not a release version, 
+     applications must compile against release versions!!! -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.tvi910.android"
+      android:versionCode="12"
+      android:versionName="12">
+    <uses-sdk android:minSdkVersion="12" android:targetSdkVersion="18"/>
+    <application android:label="@string/app_name" android:icon="@drawable/icon">
+        <activity android:name="com.tvi910.android.core.AndroidFileBrowser">
+        </activity>
+    </application>
+</manifest>

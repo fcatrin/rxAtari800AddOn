@@ -1,0 +1,5 @@
+include ':rxAtari800DroidSDL'
+include ':xtvApps'
+include ':xtvVirtualFile'
+include ':retroXUtils'
+include ':rxAtari800AddOn'
