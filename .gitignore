@@ -28,3 +28,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+/rxAtari800AddOn/release/output-metadata.json
